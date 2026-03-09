@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>质量红线 · 人人都是质量官（云端版）</title>
+    <!-- 引入Supabase客户端库 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 10% 30%, #b52b2b, #4f0b0b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .game-container {
+            max-width: 480px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 40px 40px 30px 30px;
+            padding: 16px 14px 24px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 215, 0, 0.2) inset;
+        }
+
+        .global-title {
+            text-align: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffd966;
+            text-shadow: 0 4px 0 #9e2d2d, 0 8px 16px black;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            word-break: keep-all;
+            line-height: 1.3;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: rgba(10, 20, 28, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 60px;
+            padding: 8px 14px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 200, 50, 0.4);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.6);
+        }
+
+        .avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 2 1 180px;
+        }
+
+        .avatar-img {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #1e3b4f;
+            border: 3px solid #ffd966;
+            box-shadow: 0 0 0 2px #b8860b, 0 8px 15px black;
+        }
+
+        .upload-btn {
+            background: linear-gradient(145deg, #ffd966, #b8860b);
+            color: #1a1e2b;
+            font-weight: 700;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #7a4f04, 0 8px 16px rgba(0,0,0,0.4);
+            transition: 0.1s ease;
+            border: 1px solid #f1e6b0;
+            white-space: nowrap;
+        }
+        .upload-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #7a4f04, 0 5px 12px black;
+        }
+
+        #avatarInput {
+            display: none;
+        }
+
+        .name-section {
+            flex: 3 1 140px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            border-radius: 60px;
+            padding: 4px 14px;
+            border: 1px solid #ffd966aa;
+        }
+        .name-section span {
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 4px gold);
+        }
+        #playerName {
+            background: transparent;
+            border: none;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #f0e6d2;
+            outline: none;
+            width: 100px;
+        }
+        #playerName::placeholder {
+            color: #cdb891;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .main-panel {
+            background: rgba(20, 30, 40, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 40px;
+            padding: 22px 12px 24px;
+            box-shadow: 0 20px 30px -5px black, 0 0 0 1px #ffd966 inset;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            margin-top: 8px;
+            min-height: 340px;
+            transition: all 0.3s;
+        }
+
+        .game-title-main {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-align: center;
+            color: #ffd966;
+            text-shadow: 0 4px 0 #9e2d2d, 0 8px 16px black;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 16px 6px 20px;
+            color: #ffefcf;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-shadow: 0 4px 10px #b4511e;
+            background: rgba(0,0,0,0.2);
+            border-radius: 40px;
+        }
+        .welcome-message p {
+            font-size: 1rem;
+            color: #e0cba0;
+            margin-top: 16px;
+            font-weight: 400;
+        }
+
+        .progress-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 0 4px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            background: #b22222;
+            color: #ffd98c;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 0 #6a1e1e, 0 8px 15px black;
+            letter-spacing: 0.5px;
+            border: 1px solid #ffbb33;
+            white-space: nowrap;
+        }
+        .info-text {
+            color: #ffdb9f;
+            font-weight: 600;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 12px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+        .chance-indicator {
+            background: #d4a017;
+            color: #2c0a0a;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 0 #7a4f04;
+            border: 1px solid #ffd966;
+            white-space: nowrap;
+        }
+
+        .question-desc {
+            background: linear-gradient(145deg, #b03a2b, #8b1e1e);
+            padding: 20px 12px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff7e6;
+            box-shadow: 0 10px 0 #4f1212, 0 18px 30px black;
+            margin-bottom: 28px;
+            border: 2px solid #f3b33d;
+            text-align: center;
+            line-height: 1.4;
+            text-shadow: 0 2px 0 #3f0000;
+            word-break: break-word;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .role-btn {
+            background: #2c3e4e;
+            border: none;
+            border-radius: 40px;
+            padding: 14px 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fbe8c7;
+            box-shadow: 0 6px 0 #0f1a21, 0 8px 18px black;
+            cursor: pointer;
+            transition: 0.07s linear;
+            text-align: center;
+            border: 1px solid #f1c40f;
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(4px);
+        }
+        .role-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0f1a21, 0 5px 12px black;
+        }
+        .role-btn:hover {
+            background: #3e566b;
+            border-color: #ffd966;
+            color: white;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn {
+            background: linear-gradient(145deg, #e63946, #b22222);
+            border: none;
+            color: #ffefc0;
+            font-weight: 800;
+            font-size: 1.2rem;
+            padding: 14px 28px;
+            border-radius: 60px;
+            box-shadow: 0 10px 0 #6a1e1e, 0 12px 25px black;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 2px solid #f9d27e;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .primary-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 #6a1e1e, 0 8px 20px black;
+        }
+
+        .secondary-btn {
+            background: #2c3e50;
+            box-shadow: 0 8px 0 #1a2a33, 0 8px 20px black;
+            border: 2px solid #aab7c4;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ecf0f1;
+        }
+        .reset-btn {
+            background: #3a4c5c;
+        }
+
+        .success-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0 5px;
+        }
+        .final-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid #f1c40f;
+            object-fit: cover;
+            background: #203a4a;
+            margin: 16px 0 16px;
+            box-shadow: 0 0 0 5px #b22222, 0 30px 40px black;
+        }
+        .slogan-top {
+            font-size: clamp(1.8rem, 8vw, 2.8rem);
+            font-weight: 900;
+            color: #ffd966;
+            text-align: center;
+            line-height: 1.2;
+            text-shadow: 0 4px 0 #9e2d2d, 0 8px 16px black;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            word-break: keep-all;
+            white-space: normal;
+            max-width: 100%;
+            padding: 0 4px;
+        }
+        .congrats-bottom {
+            color: #ffdfaa;
+            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            font-weight: 600;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 14px;
+            border-radius: 40px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #f3b33d;
+            margin-top: 16px;
+            text-align: center;
+            white-space: normal;
+            word-break: break-word;
+            max-width: 100%;
+            width: auto;
+            display: inline-block;
+            line-height: 1.4;
+        }
+
+        .error-message {
+            background: #4f1212dd;
+            color: #ffc9c9;
+            padding: 16px;
+            border-radius: 40px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid #ff8888;
+            box-shadow: 0 6px 0 #2f0404;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-content {
+            background: #2c3e4e;
+            border-radius: 40px;
+            padding: 24px 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid #ffd966;
+            box-shadow: 0 20px 40px black;
+        }
+        .modal-content h2 {
+            color: #ffd966;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .record-list {
+            background: #1e2b36;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #ffd96633;
+            color: #f0e6d2;
+            font-size: 1rem;
+        }
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .modal-btn {
+            background: #b22222;
+            border: none;
+            color: #ffefc0;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #6a1e1e;
+            transition: 0.1s;
+            border: 1px solid #f9d27e;
+            font-size: 1rem;
+        }
+        .modal-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #6a1e1e;
+        }
+        .close-btn {
+            background: #3a4c5c;
+            box-shadow: 0 6px 0 #1f2e38;
+        }
+        .empty-message {
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
+        .loading-message {
+            color: #ffd966;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container" id="gameContainer">
+        <div class="global-title" id="globalTitle">人人都是质量官</div>
+
+        <div class="header" id="gameHeader">
+            <div class="avatar-section">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233f617b'/%3E%3Ccircle cx='50' cy='35' r='15' fill='%23e0cba0'/%3E%3Ccircle cx='35' cy='30' r='4' fill='%23222'/%3E%3Ccircle cx='65' cy='30' r='4' fill='%23222'/%3E%3Cpath d='M35 55 Q50 70,65 55' stroke='%233d2b1a' stroke-width='4' fill='none' /%3E%3C/svg%3E" alt="avatar" class="avatar-img" id="avatarPreview">
+                <label for="avatarInput" class="upload-btn" id="uploadLabel">📸 上传头像</label>
+                <input type="file" id="avatarInput" accept="image/*">
+            </div>
+            <div class="name-section">
+                <span>👑</span>
+                <input type="text" id="playerName" placeholder="你的名字" value="" maxlength="20">
+            </div>
+        </div>
+
+        <div class="main-panel" id="mainPanel"></div>
+
+        <div class="action-bar">
+            <button class="primary-btn" id="startGameBtn">▶ 开始闯关</button>
+            <button class="secondary-btn reset-btn" id="resetGameBtn">⟲ 新的一局</button>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>📋 质量卫士名单</h2>
+            <div id="recordList" class="record-list">
+                <div class="loading-message">加载中...</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn" id="exportCSV">📥 导出CSV</button>
+                <button class="modal-btn close-btn" id="closeModal">🔙 关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- 配置Supabase（已填入您的项目信息）----------
+            const SUPABASE_URL = 'https://sbvqbvgpmjcfarclfaxj.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNidnFidmdwbWpjZmFyY2xmYXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNDAzNjMsImV4cCI6MjA4ODYxNjM2M30.QyVGuht17RddJktRbhQy0K5WeCmG7A4vbcMgHkZML6Y';
+            
+            // 初始化Supabase客户端
+            let supabase = null;
+            try {
+                supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('Supabase初始化成功');
+            } catch (e) {
+                console.error('Supabase初始化失败，请检查配置', e);
+            }
+
+            // ---------- 质量红线十条数据 ----------
+            const QUESTIONS = [
+                { role: "物料的验收员", desc: "我承诺，只接收合格、有明确来源的物料，把好品质的源头关。" },
+                { role: "现场的配料员", desc: "我坚持，严格按标准配方操作，确保每一次投料都准确无误。" },
+                { role: "质量的守护员", desc: "我确保，任何不合格品都会被清晰标识、妥善处理，未经批准绝不流转。" },
+                { role: "工艺的操作员", desc: "我承诺，遵守每一项工艺规定，不私自调整任何参数，保证操作的一致性。" },
+                { role: "关键控制点的负责人", desc: "我重视，每个关键限值的要求，确保每一个关键参数的严格执行。" },
+                { role: "食品接触面的选择者", desc: "我坚持，只使用符合安全标准的材料，直接接触食品的表面必须安全可靠。" },
+                { role: "生产记录的填写者", desc: "我做到，及时、真实、完整地记录生产数据，让每一笔记录都经得起检验。" },
+                { role: "质量异常的发现者", desc: "我承诺，发现问题第一时间上报，不隐瞒、不拖延，共同面对解决。" },
+                { role: "设备的使用者", desc: "我坚持，不使用带病或未经确认的设备，做好日常点检，让生产更稳定。" },
+                { role: "变更的执行者", desc: "我确保，任何工艺或设备的改变，都先经过评估和审批，保证风险可控。" }
+            ];
+
+            // ---------- 状态 ----------
+            let gameActive = false;               
+            let gameSuccess = false;               
+            let currentQuestions = [];             
+            let currentIndex = 0;                   
+            let attemptCount = 0;                   
+
+            let avatarUploaded = false;             
+            let userName = "";
+
+            // DOM
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarInput = document.getElementById('avatarInput');
+            const playerNameInput = document.getElementById('playerName');
+            const mainPanel = document.getElementById('mainPanel');
+            const startBtn = document.getElementById('startGameBtn');
+            const resetBtn = document.getElementById('resetGameBtn');
+            const gameHeader = document.getElementById('gameHeader');
+            const globalTitle = document.getElementById('globalTitle');
+            const adminModal = document.getElementById('adminModal');
+            const recordListDiv = document.getElementById('recordList');
+            const exportBtn = document.getElementById('exportCSV');
+            const closeModalBtn = document.getElementById('closeModal');
+
+            // ---------- 云数据库操作 ----------
+            // 添加成功记录到Supabase
+            async function addRecordToCloud(name) {
+                if (!name || !supabase) return;
+                
+                try {
+                    const { data, error } = await supabase
+                        .from('guardians')  // 表名：guardians
+                        .insert([
+                            { 
+                                name: name,
+                                created_at: new Date().toISOString()
+                            }
+                        ]);
+                    
+                    if (error) {
+                        console.error('Supabase插入失败:', error);
+                    } else {
+                        console.log('记录成功上传至云端');
+                    }
+                } catch (e) {
+                    console.error('网络错误:', e);
+                }
+            }
+
+            // 从Supabase获取所有记录
+            async function getRecordsFromCloud() {
+                if (!supabase) return [];
+                
+                try {
+                    const { data, error } = await supabase
+                        .from('guardians')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) {
+                        console.error('Supabase查询失败:', error);
+                        return [];
+                    }
+                    return data || [];
+                } catch (e) {
+                    console.error('网络错误:', e);
+                    return [];
+                }
+            }
+
+            // ---------- 辅助函数 ----------
+            function shuffleArray(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                return arr;
+            }
+
+            function getAllRoles() {
+                return QUESTIONS.map(q => q.role);
+            }
+
+            function setHeaderVisible(visible) {
+                if (visible) {
+                    gameHeader.style.display = 'flex';
+                } else {
+                    gameHeader.style.display = 'none';
+                }
+            }
+
+            function renderMainPanel() {
+                if (gameSuccess) {
+                    setHeaderVisible(false);
+                    renderSuccessScreen();
+                } else if (gameActive && currentQuestions.length > 0 && currentIndex < currentQuestions.length) {
+                    setHeaderVisible(false);
+                    renderGameScreen();
+                } else {
+                    setHeaderVisible(true);
+                    renderWelcomeScreen();
+                }
+            }
+
+            function renderWelcomeScreen() {
+                mainPanel.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="game-title-main">质量红线十条学习闯关小游戏</div>
+                        ⚜️ 请先上传头像并填写姓名 ⚜️
+                        <p>🔴 每道题有两次机会，答对进入下一关，两次错误则闯关失败</p>
+                    </div>
+                `;
+            }
+
+            function renderGameScreen() {
+                if (!gameActive || currentIndex >= currentQuestions.length) return;
+
+                const q = currentQuestions[currentIndex];
+                const allRoles = getAllRoles();
+                const shuffledOptions = shuffleArray([...allRoles]);
+
+                let optionsHtml = '';
+                shuffledOptions.forEach(roleName => {
+                    optionsHtml += `<button class="role-btn" data-role="${roleName}">${roleName}</button>`;
+                });
+
+                const chancesLeft = 2 - attemptCount;
+                const chanceText = chancesLeft > 0 ? `剩余机会: ${chancesLeft} 次` : `最后一次机会`;
+
+                const progress = `
+                    <div class="progress-row">
+                        <span class="badge">第 ${currentIndex+1} / 10 关</span>
+                        <span class="chance-indicator">⚡ ${chanceText}</span>
+                        <span class="info-text">🔥 质量红线</span>
+                    </div>
+                `;
+                const descHtml = `<div class="question-desc">“我是（　　）：${q.desc}”</div>`;
+                const gridHtml = `<div class="options-grid" id="optionsGrid">${optionsHtml}</div>`;
+
+                mainPanel.innerHTML = progress + descHtml + gridHtml;
+
+                document.querySelectorAll('.role-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if (!gameActive) return;
+                        const selectedRole = e.target.getAttribute('data-role');
+                        const correctRole = currentQuestions[currentIndex].role;
+                        if (selectedRole === correctRole) {
+                            attemptCount = 0;
+                            handleCorrectAnswer();
+                        } else {
+                            attemptCount++;
+                            if (attemptCount >= 2) {
+                                gameActive = false;
+                                mainPanel.innerHTML = `<div class="error-message">❌ 两次机会都用完… 闯关失败，请重新开始</div>`;
+                                setTimeout(() => {
+                                    renderMainPanel();
+                                }, 1500);
+                            } else {
+                                renderGameScreen();
+                            }
+                        }
+                    });
+                });
+            }
+
+            function handleCorrectAnswer() {
+                if (!gameActive) return;
+                if (currentIndex + 1 >= currentQuestions.length) {
+                    gameActive = false;
+                    gameSuccess = true;
+                    // 成功闯关，记录姓名到云端
+                    const name = playerNameInput.value.trim() || "质量官";
+                    addRecordToCloud(name);
+                    renderMainPanel();
+                } else {
+                    currentIndex++;
+                    renderMainPanel();
+                }
+            }
+
+            function renderSuccessScreen() {
+                const avatarSrc = avatarPreview.src;
+                const name = playerNameInput.value.trim() || "质量官";
+                mainPanel.innerHTML = `
+                    <div class="success-screen">
+                        <div class="slogan-top">没有质量一切为0</div>
+                        <img src="${avatarSrc}" class="final-avatar" alt="员工头像">
+                        <div class="congrats-bottom">✨ 恭喜 ${name} 闯关成功，让我们一起捍卫质量红线 ✨</div>
+                    </div>
+                `;
+            }
+
+            function startNewAttempt() {
+                if (!avatarUploaded) {
+                    alert('请先上传个人头像');
+                    return;
+                }
+                const name = playerNameInput.value.trim();
+                if (name === '') {
+                    alert('请填写你的姓名');
+                    return;
+                }
+                userName = name;
+
+                gameActive = true;
+                gameSuccess = false;
+                currentQuestions = shuffleArray([...QUESTIONS]);
+                currentIndex = 0;
+                attemptCount = 0;
+                renderMainPanel();
+            }
+
+            function resetGame() {
+                gameActive = false;
+                gameSuccess = false;
+                currentQuestions = [];
+                currentIndex = 0;
+                attemptCount = 0;
+                renderMainPanel();
+            }
+
+            // ---------- 管理功能 ----------
+            globalTitle.addEventListener('dblclick', function() {
+                openAdminModal();
+            });
+
+            async function openAdminModal() {
+                adminModal.style.display = 'flex';
+                recordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
+                
+                const records = await getRecordsFromCloud();
+                
+                if (records.length === 0) {
+                    recordListDiv.innerHTML = '<div class="empty-message">暂无成功记录</div>';
+                    return;
+                }
+                
+                let html = '';
+                records.forEach(rec => {
+                    const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
+                    html += `<div class="record-item"><span>${rec.name}</span><span>${time}</span></div>`;
+                });
+                recordListDiv.innerHTML = html;
+            }
+
+            function closeAdminModal() {
+                adminModal.style.display = 'none';
+            }
+
+            function exportToCSV() {
+                const items = document.querySelectorAll('.record-item');
+                if (items.length === 0) {
+                    alert('没有记录可导出');
+                    return;
+                }
+                
+                let csv = '姓名,闯关成功时间\n';
+                items.forEach(item => {
+                    const name = item.querySelector('span:first-child').innerText;
+                    const time = item.querySelector('span:last-child').innerText;
+                    csv += `${name},${time}\n`;
+                });
+                
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.setAttribute('download', '质量卫士名单.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+
+            exportBtn.addEventListener('click', exportToCSV);
+            closeModalBtn.addEventListener('click', closeAdminModal);
+
+            adminModal.addEventListener('click', function(e) {
+                if (e.target === adminModal) {
+                    closeAdminModal();
+                }
+            });
+
+            // 头像上传
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        avatarPreview.src = ev.target.result;
+                        avatarUploaded = true;   
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            startBtn.addEventListener('click', function() {
+                startNewAttempt();
+            });
+
+            resetBtn.addEventListener('click', function() {
+                resetGame();
+            });
+
+            function init() {
+                renderMainPanel();
+                avatarUploaded = false;
+                playerNameInput.value = '';
+                
+                if (!supabase) {
+                    console.warn('Supabase未正确配置，数据将不会保存到云端');
+                }
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
