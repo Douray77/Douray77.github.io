@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>质量红线 · 人人都是质量官（云端版）</title>
-    <!-- 引入Supabase客户端库 -->
+    <!-- 引入Supabase客户端库（修正后使用 supabase 全局变量） -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -507,10 +507,10 @@
             const SUPABASE_URL = 'https://sbvqbvgpmjcfarclfaxj.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNidnFidmdwbWpjZmFyY2xmYXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwNDAzNjMsImV4cCI6MjA4ODYxNjM2M30.QyVGuht17RddJktRbhQy0K5WeCmG7A4vbcMgHkZML6Y';
             
-            // 初始化Supabase客户端
+            // 初始化Supabase客户端（修正：使用 supabase 而不是 supabaseClient）
             let supabase = null;
             try {
-                supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('Supabase初始化成功');
             } catch (e) {
                 console.error('Supabase初始化失败，请检查配置', e);
