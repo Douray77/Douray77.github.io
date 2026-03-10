@@ -508,15 +508,19 @@
             // 使用您提供的 Publishable key
             const SUPABASE_ANON_KEY = 'sb_publishable_ZKlqQaFMhNEE0uRWZOd-Kw_1zIza0HF';
             
-            // 初始化Supabase客户端
-            let supabase = null;
+            // 初始化Supabase客户端（使用不同的变量名避免与全局supabase冲突）
+            let supabaseClient = null;
             try {
+                // 检查全局 supabase 对象是否存在
+                if (typeof supabase === 'undefined' || !supabase) {
+                    throw new Error('Supabase library not loaded properly');
+                }
                 const { createClient } = supabase;
-                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase初始化成功', supabase);
+                supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase初始化成功', supabaseClient);
             } catch (e) {
                 console.error('❌ Supabase初始化失败', e);
-                supabase = null;
+                supabaseClient = null;
             }
 
             // ---------- 质量红线十条数据 ----------
@@ -561,12 +565,12 @@
             // 添加成功记录到Supabase
             async function addRecordToCloud(name) {
                 console.log('🚀 addRecordToCloud 被调用，name=', name);
-                if (!name || !supabase) {
-                    console.warn('❌ addRecordToCloud 跳过：supabase无效或name为空');
+                if (!name || !supabaseClient) {
+                    console.warn('❌ addRecordToCloud 跳过：supabaseClient无效或name为空');
                     return;
                 }
                 try {
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('guardians')  // 表名：guardians
                         .insert([{ 
                             name: name,
@@ -585,10 +589,10 @@
 
             // 从Supabase获取所有记录
             async function getRecordsFromCloud() {
-                if (!supabase) return [];
+                if (!supabaseClient) return [];
                 
                 try {
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('guardians')
                         .select('*')
                         .order('created_at', { ascending: false });
@@ -846,8 +850,8 @@
                 avatarUploaded = false;
                 playerNameInput.value = '';
                 
-                if (!supabase) {
-                    console.warn('Supabase未正确配置，数据将不会保存到云端');
+                if (!supabaseClient) {
+                    console.warn('⚠️ Supabase未正确配置，数据将不会保存到云端');
                 }
             }
 
