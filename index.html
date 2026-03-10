@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>质量红线 · 人人都是质量官（云端版）</title>
-    <!-- 引入Supabase客户端库（修正后使用 supabase 全局变量） -->
+    <!-- 引入Supabase客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
@@ -503,17 +503,20 @@
 
     <script>
         (function() {
-            // ---------- 配置Supabase（已填入您的项目信息）----------
+            // ---------- 配置Supabase ----------
             const SUPABASE_URL = 'https://sbvqbvgpmjcfarclfaxj.supabase.co';
+            // 使用您提供的 Publishable key
             const SUPABASE_ANON_KEY = 'sb_publishable_ZKlqQaFMhNEE0uRWZOd-Kw_1zIza0HF';
             
-            // 初始化Supabase客户端（修正：使用 supabase 而不是 supabaseClient）
+            // 初始化Supabase客户端
             let supabase = null;
             try {
-                supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase初始化成功');
+                const { createClient } = supabase;
+                supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                console.log('✅ Supabase初始化成功', supabase);
             } catch (e) {
-                console.error('Supabase初始化失败，请检查配置', e);
+                console.error('❌ Supabase初始化失败', e);
+                supabase = null;
             }
 
             // ---------- 质量红线十条数据 ----------
@@ -557,25 +560,26 @@
             // ---------- 云数据库操作 ----------
             // 添加成功记录到Supabase
             async function addRecordToCloud(name) {
-                if (!name || !supabase) return;
-                
+                console.log('🚀 addRecordToCloud 被调用，name=', name);
+                if (!name || !supabase) {
+                    console.warn('❌ addRecordToCloud 跳过：supabase无效或name为空');
+                    return;
+                }
                 try {
                     const { data, error } = await supabase
                         .from('guardians')  // 表名：guardians
-                        .insert([
-                            { 
-                                name: name,
-                                created_at: new Date().toISOString()
-                            }
-                        ]);
+                        .insert([{ 
+                            name: name,
+                            created_at: new Date().toISOString()
+                        }]);
                     
                     if (error) {
-                        console.error('Supabase插入失败:', error);
+                        console.error('❌ Supabase插入失败:', error);
                     } else {
-                        console.log('记录成功上传至云端');
+                        console.log('✅ 记录成功上传至云端', data);
                     }
                 } catch (e) {
-                    console.error('网络错误:', e);
+                    console.error('❌ 网络错误:', e);
                 }
             }
 
@@ -599,6 +603,9 @@
                     return [];
                 }
             }
+
+            // ---------- 将 addRecordToCloud 暴露到全局，方便调试 ----------
+            window.addRecordToCloud = addRecordToCloud;
 
             // ---------- 辅助函数 ----------
             function shuffleArray(arr) {
@@ -702,7 +709,7 @@
                     gameSuccess = true;
                     // 成功闯关，记录姓名到云端
                     const name = playerNameInput.value.trim() || "质量官";
-                    addRecordToCloud(name);
+                    addRecordToCloud(name);   // 确保调用
                     renderMainPanel();
                 } else {
                     currentIndex++;
