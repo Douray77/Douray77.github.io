@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>质量红线 · 人人都是质量官（云端版）</title>
+    <title>质量红线 · 部门版</title>
     <!-- 引入Supabase客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -40,6 +40,7 @@
             font-size: 1.6rem;
             font-weight: 800;
             color: #ffd966;
+            /* text-shadow 已移除 */
             letter-spacing: 2px;
             margin-bottom: 12px;
             word-break: keep-all;
@@ -48,88 +49,51 @@
             user-select: none;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        /* 头部：部门 + 姓名输入区 */
+        .info-section {
             background: rgba(10, 20, 28, 0.8);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border-radius: 60px;
-            padding: 8px 14px;
+            border-radius: 30px;
+            padding: 14px 16px;
             margin-bottom: 18px;
             border: 1px solid rgba(255, 200, 50, 0.4);
             box-shadow: 0 8px 18px rgba(0,0,0,0.6);
         }
 
-        .avatar-section {
+        .input-row {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex: 2 1 180px;
+            margin-bottom: 10px;
         }
-
-        .avatar-img {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #1e3b4f;
-            border: 3px solid #ffd966;
-            box-shadow: 0 0 0 2px #b8860b, 0 8px 15px black;
+        .input-row:last-child {
+            margin-bottom: 0;
         }
-
-        .upload-btn {
-            background: linear-gradient(145deg, #ffd966, #b8860b);
-            color: #1a1e2b;
-            font-weight: 700;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #7a4f04, 0 8px 16px rgba(0,0,0,0.4);
-            transition: 0.1s ease;
-            border: 1px solid #f1e6b0;
-            white-space: nowrap;
-        }
-        .upload-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #7a4f04, 0 5px 12px black;
-        }
-
-        #avatarInput {
-            display: none;
-        }
-
-        .name-section {
-            flex: 3 1 140px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-            border-radius: 60px;
-            padding: 4px 14px;
-            border: 1px solid #ffd966aa;
-        }
-        .name-section span {
-            font-size: 1.2rem;
+        .input-icon {
+            font-size: 1.3rem;
+            min-width: 32px;
+            text-align: center;
             filter: drop-shadow(0 2px 4px gold);
         }
-        #playerName {
+        .input-field {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            border-radius: 40px;
+            padding: 10px 16px;
+            border: 1px solid #ffd966aa;
+        }
+        .input-field input {
+            width: 100%;
             background: transparent;
             border: none;
-            padding: 8px 0;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
             color: #f0e6d2;
             outline: none;
-            width: 100px;
         }
-        #playerName::placeholder {
+        .input-field input::placeholder {
             color: #cdb891;
             font-weight: 400;
             font-style: italic;
@@ -153,9 +117,10 @@
             font-weight: 900;
             text-align: center;
             color: #ffd966;
+            /* text-shadow 已移除 */
             margin-bottom: 16px;
             letter-spacing: 1px;
-            line-height: 1.2;
+            line-height: 1.4;
         }
 
         .welcome-message {
@@ -164,7 +129,6 @@
             color: #ffefcf;
             font-size: 1.2rem;
             font-weight: 500;
-            text-shadow: 0 4px 10px #b4511e;
             background: rgba(0,0,0,0.2);
             border-radius: 40px;
         }
@@ -270,7 +234,7 @@
         .action-bar {
             display: flex;
             justify-content: center;
-            gap: 16px;
+            gap: 12px;
             margin-top: 20px;
             flex-wrap: wrap;
         }
@@ -281,7 +245,7 @@
             color: #ffefc0;
             font-weight: 800;
             font-size: 1.2rem;
-            padding: 14px 28px;
+            padding: 14px 24px;
             border-radius: 60px;
             box-shadow: 0 10px 0 #6a1e1e, 0 12px 25px black;
             cursor: pointer;
@@ -300,62 +264,47 @@
             background: #2c3e50;
             box-shadow: 0 8px 0 #1a2a33, 0 8px 20px black;
             border: 2px solid #aab7c4;
-            padding: 12px 24px;
+            padding: 12px 20px;
             font-size: 1rem;
             font-weight: 600;
             color: #ecf0f1;
         }
-        .reset-btn {
-            background: #3a4c5c;
+        .my-achievement-btn {
+            background: #d4a017;
+            box-shadow: 0 8px 0 #7a4f04;
+            border: 2px solid #ffd966;
+            color: #2c0a0a;
         }
 
+        /* 成功画面（无头像） */
         .success-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 0 5px;
-        }
-        .final-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 5px solid #f1c40f;
-            object-fit: cover;
-            background: #203a4a;
-            margin: 16px 0 16px;
-            box-shadow: 0 0 0 5px #b22222, 0 30px 40px black;
+            padding: 20px 0 10px;
         }
         .slogan-top {
-            font-size: clamp(1.8rem, 8vw, 2.8rem);
+            font-size: clamp(2rem, 8vw, 3rem);
             font-weight: 900;
             color: #ffd966;
             text-align: center;
             line-height: 1.2;
-            text-shadow: 0 4px 0 #9e2d2d, 0 8px 16px black;
-            margin-bottom: 8px;
+            margin-bottom: 20px;
             letter-spacing: 1px;
             word-break: keep-all;
-            white-space: normal;
-            max-width: 100%;
-            padding: 0 4px;
         }
         .congrats-bottom {
             color: #ffdfaa;
-            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            font-size: clamp(1rem, 4vw, 1.3rem);
             font-weight: 600;
             background: rgba(0,0,0,0.5);
-            padding: 8px 14px;
+            padding: 12px 24px;
             border-radius: 40px;
             backdrop-filter: blur(5px);
             border: 1px solid #f3b33d;
-            margin-top: 16px;
+            margin-top: 20px;
             text-align: center;
-            white-space: normal;
-            word-break: break-word;
-            max-width: 100%;
-            width: auto;
-            display: inline-block;
             line-height: 1.4;
         }
 
@@ -372,6 +321,7 @@
             box-shadow: 0 6px 0 #2f0404;
         }
 
+        /* 模态框共用样式 */
         .modal {
             position: fixed;
             top: 0;
@@ -466,29 +416,37 @@
     <div class="game-container" id="gameContainer">
         <div class="global-title" id="globalTitle">人人都是质量官</div>
 
-        <div class="header" id="gameHeader">
-            <div class="avatar-section">
-                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233f617b'/%3E%3Ccircle cx='50' cy='35' r='15' fill='%23e0cba0'/%3E%3Ccircle cx='35' cy='30' r='4' fill='%23222'/%3E%3Ccircle cx='65' cy='30' r='4' fill='%23222'/%3E%3Cpath d='M35 55 Q50 70,65 55' stroke='%233d2b1a' stroke-width='4' fill='none' /%3E%3C/svg%3E" alt="avatar" class="avatar-img" id="avatarPreview">
-                <label for="avatarInput" class="upload-btn" id="uploadLabel">📸 上传头像</label>
-                <input type="file" id="avatarInput" accept="image/*">
+        <!-- 部门 + 姓名输入区（取代原头像区域） -->
+        <div class="info-section" id="infoSection">
+            <div class="input-row">
+                <span class="input-icon">🏢</span>
+                <div class="input-field">
+                    <input type="text" id="departmentInput" placeholder="部门" value="" maxlength="50">
+                </div>
             </div>
-            <div class="name-section">
-                <span>👑</span>
-                <input type="text" id="playerName" placeholder="你的名字" value="" maxlength="20">
+            <div class="input-row">
+                <span class="input-icon">👤</span>
+                <div class="input-field">
+                    <input type="text" id="playerName" placeholder="姓名" value="" maxlength="20">
+                </div>
             </div>
         </div>
 
+        <!-- 主面板：动态渲染 -->
         <div class="main-panel" id="mainPanel"></div>
 
+        <!-- 底部操作按钮（增加“我的成就”） -->
         <div class="action-bar">
             <button class="primary-btn" id="startGameBtn">▶ 开始闯关</button>
+            <button class="secondary-btn my-achievement-btn" id="myAchievementBtn">🏆 我的成就</button>
             <button class="secondary-btn reset-btn" id="resetGameBtn">⟲ 新的一局</button>
         </div>
     </div>
 
+    <!-- 管理员模态框（所有人记录） -->
     <div id="adminModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <h2>📋 质量卫士名单</h2>
+            <h2>📋 质量卫士总榜</h2>
             <div id="recordList" class="record-list">
                 <div class="loading-message">加载中...</div>
             </div>
@@ -499,17 +457,28 @@
         </div>
     </div>
 
+    <!-- 个人成就模态框（当前用户记录） -->
+    <div id="myAchievementModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>🏅 我的成就</h2>
+            <div id="myRecordList" class="record-list">
+                <div class="loading-message">加载中...</div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn close-btn" id="closeMyModal">🔙 关闭</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
             // ---------- 配置Supabase ----------
             const SUPABASE_URL = 'https://sbvqbvgpmjcfarclfaxj.supabase.co';
-            // 使用您提供的 Publishable key
             const SUPABASE_ANON_KEY = 'sb_publishable_ZKlqQaFMhNEE0uRWZOd-Kw_1zIza0HF';
             
-            // 初始化Supabase客户端（使用不同的变量名避免与全局supabase冲突）
+            // 初始化Supabase客户端
             let supabaseClient = null;
             try {
-                // 检查全局 supabase 对象是否存在
                 if (typeof supabase === 'undefined' || !supabase) {
                     throw new Error('Supabase library not loaded properly');
                 }
@@ -520,6 +489,9 @@
                 console.error('❌ Supabase初始化失败', e);
                 supabaseClient = null;
             }
+
+            // 注意：需要在Supabase的guardians表中增加department列，执行SQL：
+            // ALTER TABLE guardians ADD COLUMN department text;
 
             // ---------- 质量红线十条数据 ----------
             const QUESTIONS = [
@@ -542,41 +514,51 @@
             let currentIndex = 0;                   
             let attemptCount = 0;                   
 
-            let avatarUploaded = false;             
+            let userDepartment = "";
             let userName = "";
 
             // DOM
-            const avatarPreview = document.getElementById('avatarPreview');
-            const avatarInput = document.getElementById('avatarInput');
+            const departmentInput = document.getElementById('departmentInput');
             const playerNameInput = document.getElementById('playerName');
             const mainPanel = document.getElementById('mainPanel');
             const startBtn = document.getElementById('startGameBtn');
             const resetBtn = document.getElementById('resetGameBtn');
-            const gameHeader = document.getElementById('gameHeader');
+            const myAchievementBtn = document.getElementById('myAchievementBtn');
+            const infoSection = document.getElementById('infoSection');
             const globalTitle = document.getElementById('globalTitle');
+
+            // 管理员模态框
             const adminModal = document.getElementById('adminModal');
             const recordListDiv = document.getElementById('recordList');
             const exportBtn = document.getElementById('exportCSV');
             const closeModalBtn = document.getElementById('closeModal');
 
+            // 个人成就模态框
+            const myModal = document.getElementById('myAchievementModal');
+            const myRecordListDiv = document.getElementById('myRecordList');
+            const closeMyModalBtn = document.getElementById('closeMyModal');
+
             // ---------- 云数据库操作 ----------
-            // 添加成功记录到Supabase
-            async function addRecordToCloud(name) {
-                console.log('🚀 addRecordToCloud 被调用，name=', name);
-                if (!name || !supabaseClient) {
-                    console.warn('❌ addRecordToCloud 跳过：supabaseClient无效或name为空');
+            async function addRecordToCloud(department, name) {
+                console.log('🚀 addRecordToCloud 被调用', { department, name });
+                if (!department || !name || !supabaseClient) {
+                    console.warn('❌ addRecordToCloud 跳过：参数不完整或supabaseClient无效');
                     return;
                 }
                 try {
                     const { data, error } = await supabaseClient
-                        .from('guardians')  // 表名：guardians
+                        .from('guardians')
                         .insert([{ 
+                            department: department,
                             name: name,
                             created_at: new Date().toISOString()
                         }]);
                     
                     if (error) {
                         console.error('❌ Supabase插入失败:', error);
+                        if (error.message && error.message.includes('column "department" does not exist')) {
+                            alert('数据库缺少 department 列，请在Supabase SQL中执行：ALTER TABLE guardians ADD COLUMN department text;');
+                        }
                     } else {
                         console.log('✅ 记录成功上传至云端', data);
                     }
@@ -585,18 +567,16 @@
                 }
             }
 
-            // 从Supabase获取所有记录
-            async function getRecordsFromCloud() {
+            // 从Supabase获取所有记录（管理员）
+            async function getAllRecords() {
                 if (!supabaseClient) return [];
-                
                 try {
                     const { data, error } = await supabaseClient
                         .from('guardians')
                         .select('*')
                         .order('created_at', { ascending: false });
-                    
                     if (error) {
-                        console.error('Supabase查询失败:', error);
+                        console.error('查询失败:', error);
                         return [];
                     }
                     return data || [];
@@ -606,7 +586,33 @@
                 }
             }
 
-            // ---------- 将 addRecordToCloud 暴露到全局，方便调试 ----------
+            // 获取当前用户的记录（部门+姓名匹配）
+            async function getMyRecords() {
+                const department = departmentInput.value.trim();
+                const name = playerNameInput.value.trim();
+                if (!department || !name) {
+                    return [];
+                }
+                if (!supabaseClient) return [];
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('guardians')
+                        .select('*')
+                        .eq('department', department)
+                        .eq('name', name)
+                        .order('created_at', { ascending: false });
+                    if (error) {
+                        console.error('查询个人记录失败:', error);
+                        return [];
+                    }
+                    return data || [];
+                } catch (e) {
+                    console.error('网络错误:', e);
+                    return [];
+                }
+            }
+
+            // 暴露到全局方便调试
             window.addRecordToCloud = addRecordToCloud;
 
             // ---------- 辅助函数 ----------
@@ -622,23 +628,20 @@
                 return QUESTIONS.map(q => q.role);
             }
 
-            function setHeaderVisible(visible) {
-                if (visible) {
-                    gameHeader.style.display = 'flex';
-                } else {
-                    gameHeader.style.display = 'none';
-                }
+            // 控制信息区域显示/隐藏（仅在欢迎界面显示）
+            function setInfoVisible(visible) {
+                infoSection.style.display = visible ? 'block' : 'none';
             }
 
             function renderMainPanel() {
                 if (gameSuccess) {
-                    setHeaderVisible(false);
+                    setInfoVisible(false);
                     renderSuccessScreen();
                 } else if (gameActive && currentQuestions.length > 0 && currentIndex < currentQuestions.length) {
-                    setHeaderVisible(false);
+                    setInfoVisible(false);
                     renderGameScreen();
                 } else {
-                    setHeaderVisible(true);
+                    setInfoVisible(true);
                     renderWelcomeScreen();
                 }
             }
@@ -647,7 +650,7 @@
                 mainPanel.innerHTML = `
                     <div class="welcome-message">
                         <div class="game-title-main">《质量红线十条》<br>学习闯关小游戏</div>
-                        ⚜️ 请先上传头像并填写姓名 ⚜️
+                        ⚜️ 请先填写部门及姓名 ⚜️
                         <p>🔴 每道题有两次机会，答对进入下一关，两次错误则闯关失败</p>
                     </div>
                 `;
@@ -709,9 +712,12 @@
                 if (currentIndex + 1 >= currentQuestions.length) {
                     gameActive = false;
                     gameSuccess = true;
-                    // 成功闯关，记录姓名到云端
-                    const name = playerNameInput.value.trim() || "质量官";
-                    addRecordToCloud(name);   // 确保调用
+                    // 成功闯关，记录部门+姓名到云端
+                    const department = departmentInput.value.trim();
+                    const name = playerNameInput.value.trim();
+                    if (department && name) {
+                        addRecordToCloud(department, name);
+                    }
                     renderMainPanel();
                 } else {
                     currentIndex++;
@@ -720,27 +726,27 @@
             }
 
             function renderSuccessScreen() {
-                const avatarSrc = avatarPreview.src;
                 const name = playerNameInput.value.trim() || "质量官";
                 mainPanel.innerHTML = `
                     <div class="success-screen">
                         <div class="slogan-top">没有质量一切为0</div>
-                        <img src="${avatarSrc}" class="final-avatar" alt="员工头像">
                         <div class="congrats-bottom">✨ 恭喜 ${name} 闯关成功，让我们一起捍卫质量红线 ✨</div>
                     </div>
                 `;
             }
 
             function startNewAttempt() {
-                if (!avatarUploaded) {
-                    alert('请先上传个人头像');
-                    return;
-                }
+                const department = departmentInput.value.trim();
                 const name = playerNameInput.value.trim();
-                if (name === '') {
-                    alert('请填写你的姓名');
+                if (department === '') {
+                    alert('请填写部门');
                     return;
                 }
+                if (name === '') {
+                    alert('请填写姓名');
+                    return;
+                }
+                userDepartment = department;
                 userName = name;
 
                 gameActive = true;
@@ -760,7 +766,7 @@
                 renderMainPanel();
             }
 
-            // ---------- 管理功能 ----------
+            // ---------- 管理功能（管理员） ----------
             globalTitle.addEventListener('dblclick', function() {
                 openAdminModal();
             });
@@ -768,20 +774,17 @@
             async function openAdminModal() {
                 adminModal.style.display = 'flex';
                 recordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
-                
-                const records = await getRecordsFromCloud();
-                
+                const records = await getAllRecords();
                 if (records.length === 0) {
                     recordListDiv.innerHTML = '<div class="empty-message">暂无成功记录</div>';
-                    return;
+                } else {
+                    let html = '';
+                    records.forEach(rec => {
+                        const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
+                        html += `<div class="record-item"><span>${rec.department || ''} ${rec.name}</span><span>${time}</span></div>`;
+                    });
+                    recordListDiv.innerHTML = html;
                 }
-                
-                let html = '';
-                records.forEach(rec => {
-                    const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
-                    html += `<div class="record-item"><span>${rec.name}</span><span>${time}</span></div>`;
-                });
-                recordListDiv.innerHTML = html;
             }
 
             function closeAdminModal() {
@@ -789,19 +792,21 @@
             }
 
             function exportToCSV() {
-                const items = document.querySelectorAll('.record-item');
+                const items = document.querySelectorAll('#recordList .record-item');
                 if (items.length === 0) {
                     alert('没有记录可导出');
                     return;
                 }
-                
-                let csv = '姓名,闯关成功时间\n';
+                let csv = '部门,姓名,闯关成功时间\n';
                 items.forEach(item => {
-                    const name = item.querySelector('span:first-child').innerText;
+                    const text = item.querySelector('span:first-child').innerText;
                     const time = item.querySelector('span:last-child').innerText;
-                    csv += `${name},${time}\n`;
+                    // 分割部门和姓名（以空格分隔）
+                    const parts = text.split(' ');
+                    const department = parts[0] || '';
+                    const name = parts[1] || text;
+                    csv += `${department},${name},${time}\n`;
                 });
-                
                 const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -815,42 +820,49 @@
 
             exportBtn.addEventListener('click', exportToCSV);
             closeModalBtn.addEventListener('click', closeAdminModal);
-
             adminModal.addEventListener('click', function(e) {
-                if (e.target === adminModal) {
-                    closeAdminModal();
+                if (e.target === adminModal) closeAdminModal();
+            });
+
+            // ---------- 个人成就功能 ----------
+            myAchievementBtn.addEventListener('click', async function() {
+                const department = departmentInput.value.trim();
+                const name = playerNameInput.value.trim();
+                if (!department || !name) {
+                    alert('请先填写部门及姓名');
+                    return;
+                }
+                myModal.style.display = 'flex';
+                myRecordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
+                const records = await getMyRecords();
+                if (records.length === 0) {
+                    myRecordListDiv.innerHTML = '<div class="empty-message">您还没有闯关成功记录</div>';
+                } else {
+                    let html = '';
+                    records.forEach(rec => {
+                        const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
+                        html += `<div class="record-item"><span>${rec.department} ${rec.name}</span><span>${time}</span></div>`;
+                    });
+                    myRecordListDiv.innerHTML = html;
                 }
             });
 
-            // 头像上传
-            avatarInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        avatarPreview.src = ev.target.result;
-                        avatarUploaded = true;   
-                    };
-                    reader.readAsDataURL(file);
-                }
+            closeMyModalBtn.addEventListener('click', function() {
+                myModal.style.display = 'none';
+            });
+            myModal.addEventListener('click', function(e) {
+                if (e.target === myModal) myModal.style.display = 'none';
             });
 
-            startBtn.addEventListener('click', function() {
-                startNewAttempt();
-            });
-
-            resetBtn.addEventListener('click', function() {
-                resetGame();
-            });
+            // 按钮事件
+            startBtn.addEventListener('click', startNewAttempt);
+            resetBtn.addEventListener('click', resetGame);
 
             function init() {
                 renderMainPanel();
-                avatarUploaded = false;
+                // 清空输入框（可选）
+                departmentInput.value = '';
                 playerNameInput.value = '';
-                
-                if (!supabaseClient) {
-                    console.warn('⚠️ Supabase未正确配置，数据将不会保存到云端');
-                }
             }
 
             init();
