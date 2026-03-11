@@ -6,6 +6,8 @@
     <title>质量红线 · 年轻版</title>
     <!-- 引入Supabase客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- 引入 Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -93,7 +95,7 @@
             to { text-shadow: 5px 5px 0 #9d4edd, 8px 8px 0 rgba(0,0,0,0.3); }
         }
 
-        /* 部门 + 姓名输入区 */
+        /* 部门 + 姓名输入区（替换为 Font Awesome 图标） */
         .info-section {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
@@ -115,10 +117,13 @@
             margin-bottom: 0;
         }
         .input-icon {
-            font-size: 1.6rem;
             min-width: 40px;
             text-align: center;
-            filter: drop-shadow(0 2px 4px rgba(255,215,0,0.5));
+        }
+        .input-icon i {
+            font-size: 2rem;
+            color: #ffd966;
+            filter: drop-shadow(0 2px 4px gold);
         }
         .input-field {
             flex: 1;
@@ -496,16 +501,16 @@
     <div class="game-container" id="gameContainer">
         <div class="global-title" id="globalTitle">人人都是质量官</div>
 
-        <!-- 部门 + 姓名输入区 -->
+        <!-- 部门 + 姓名输入区（使用 Font Awesome 图标） -->
         <div class="info-section" id="infoSection">
             <div class="input-row">
-                <span class="input-icon">🏢</span>
+                <span class="input-icon"><i class="fas fa-building"></i></span>
                 <div class="input-field">
                     <input type="text" id="departmentInput" placeholder="部门" value="" maxlength="50">
                 </div>
             </div>
             <div class="input-row">
-                <span class="input-icon">👤</span>
+                <span class="input-icon"><i class="fas fa-user"></i></span>
                 <div class="input-field">
                     <input type="text" id="playerName" placeholder="姓名" value="" maxlength="20">
                 </div>
