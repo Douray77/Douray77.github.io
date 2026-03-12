@@ -3,288 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>质量红线 · 年轻版</title>
-    <!-- 引入Supabase客户端库 -->
+    <title>人人都是质量官 · 工业赛博</title>
+    <!-- Supabase客户端库 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- 引入 Font Awesome 图标库 -->
+    <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 保留您之前的所有样式，此处省略以避免重复，实际使用时请保留完整样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            font-family: 'Share Tech Mono', 'Courier New', 'Poppins', monospace;
         }
-
-        /* 引入 Google Font 增加现代感 */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Poppins:wght@400;600;800&display=swap');
 
         body {
             min-height: 100vh;
-            background: linear-gradient(145deg, #ff8c5a, #ff4d6d, #9d4edd);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: #0c0c0c;
+            background-image: 
+                linear-gradient(0deg, rgba(255, 140, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 140, 0, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: 12px;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* 动态背景动画 */
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 飘浮的装饰星星 */
-        .star {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.3);
-            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-            animation: float 6s infinite;
+        body::before {
+            content: '';
+            position: fixed;
+            top: -30%;
+            left: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(255, 100, 0, 0.3) 0%, transparent 70%);
+            filter: blur(60px);
             z-index: 0;
         }
-        .star:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
-        .star:nth-child(2) { top: 20%; right: 8%; width: 30px; height: 30px; animation-delay: 2s; }
-        .star:nth-child(3) { bottom: 15%; left: 15%; width: 15px; height: 15px; animation-delay: 4s; }
-        .star:nth-child(4) { bottom: 25%; right: 20%; animation-delay: 1s; }
-        .star:nth-child(5) { top: 40%; left: 30%; width: 25px; height: 25px; animation-delay: 3s; }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.7; }
-            100% { transform: translateY(0) rotate(360deg); opacity: 0.3; }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            right: -20%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(255, 200, 0, 0.3) 0%, transparent 70%);
+            filter: blur(60px);
+            z-index: 0;
         }
 
         .game-container {
-            max-width: 480px;
+            max-width: 500px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50px 50px 40px 40px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid #FF8F00;
+            border-radius: 30px;
             padding: 20px 16px 28px;
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            box-shadow: 0 0 30px #FF8F00, inset 0 0 10px rgba(255, 140, 0, 0.3);
             position: relative;
             z-index: 10;
+        }
+
+        .game-container::before,
+        .game-container::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #FFD700;
+            filter: drop-shadow(0 0 8px gold);
+        }
+        .game-container::before {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+        .game-container::after {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
         }
 
         .global-title {
             text-align: center;
             font-size: 2rem;
             font-weight: 800;
-            color: #ffffff;
-            text-shadow: 3px 3px 0 #ff4d6d, 5px 5px 0 rgba(0,0,0,0.2);
-            letter-spacing: 2px;
-            margin-bottom: 16px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FF8F00, 0 0 20px #E65100;
+            letter-spacing: 4px;
+            margin-bottom: 4px;
             word-break: keep-all;
             line-height: 1.2;
             cursor: pointer;
             user-select: none;
-            animation: titleGlow 2s infinite alternate;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
         }
 
-        @keyframes titleGlow {
-            from { text-shadow: 3px 3px 0 #ff4d6d, 5px 5px 0 rgba(0,0,0,0.2); }
-            to { text-shadow: 5px 5px 0 #9d4edd, 8px 8px 0 rgba(0,0,0,0.3); }
+        .sub-title {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #FFE0B0;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            opacity: 0.8;
         }
 
-        /* 部门 + 姓名输入区（替换为 Font Awesome 图标） */
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            color: #FFD700;
+            font-size: 1rem;
+            border: 1px solid #FF8F00;
+        }
+
         .info-section {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #FF8F00;
+            border-radius: 20px;
             padding: 18px 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 0 10px rgba(255, 140, 0, 0.2), 0 4px 10px rgba(0,0,0,0.5);
         }
-
         .input-row {
             display: flex;
             align-items: center;
             gap: 12px;
             margin-bottom: 14px;
         }
-        .input-row:last-child {
-            margin-bottom: 0;
-        }
+        .input-row:last-child { margin-bottom: 0; }
         .input-icon {
             min-width: 40px;
             text-align: center;
-        }
-        .input-icon i {
-            font-size: 2rem;
-            color: #ffd966;
-            filter: drop-shadow(0 2px 4px gold);
+            color: #FFD700;
+            font-size: 1.6rem;
+            filter: drop-shadow(0 0 8px #FF8F00);
         }
         .input-field {
             flex: 1;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(4px);
-            border-radius: 50px;
-            padding: 12px 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid #FF8F00;
+            border-radius: 40px;
+            padding: 10px 16px;
+            transition: 0.2s;
         }
         .input-field:focus-within {
-            border-color: #ffd966;
-            box-shadow: 0 0 0 4px rgba(255, 217, 102, 0.3);
-            background: rgba(255, 255, 255, 0.5);
+            border-color: #FFD700;
+            box-shadow: 0 0 15px #FF8F00;
         }
         .input-field input {
             width: 100%;
             background: transparent;
             border: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
-            color: #2c0a0a;
+            color: #FFE0B0;
             outline: none;
+            font-family: 'Share Tech Mono', monospace;
         }
         .input-field input::placeholder {
-            color: #5a3e3e;
+            color: #7A5A3A;
             font-weight: 400;
-            font-style: italic;
+        }
+
+        .rank-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 16px 0 8px;
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #FF8F00;
+            border-radius: 20px;
+            color: #FFE0B0;
+            font-size: 0.9rem;
+        }
+        .rank-info span {
+            color: #FFD700;
+            font-weight: 700;
+        }
+
+        .redline-header {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #FFD700;
+            margin: 20px 0 10px;
+            text-align: center;
+            text-shadow: 0 0 8px #FF8F00;
+        }
+
+        .redline-list {
+            list-style: none;
+            margin: 10px 0 20px;
+        }
+        .redline-item {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px dashed rgba(255, 140, 0, 0.3);
+            color: #FFE0B0;
+            font-size: 0.85rem;
+        }
+        .redline-item::before {
+            content: '⚡';
+            color: #FFD700;
+            font-size: 1rem;
         }
 
         .main-panel {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #FF8F00;
+            border-radius: 30px;
             padding: 24px 16px 28px;
-            box-shadow: 0 20px 30px -5px black, 0 0 0 1px rgba(255, 255, 255, 0.3) inset;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 0 20px rgba(255, 140, 0, 0.2);
             margin-top: 8px;
-            min-height: 340px;
+            min-height: 380px;
             transition: all 0.3s;
         }
 
-        .game-title-main {
-            font-size: 2rem;
-            font-weight: 800;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 2px 2px 0 #ff4d6d, 4px 4px 0 rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-            line-height: 1.4;
+        .scenario-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-
-        .welcome-message {
-            text-align: center;
-            padding: 20px 8px 24px;
-            color: #fff6e0;
-            font-size: 1.3rem;
-            font-weight: 500;
-            background: rgba(0,0,0,0.1);
-            border-radius: 50px;
-        }
-        .welcome-message p {
-            font-size: 1.1rem;
-            color: #fff0c0;
-            margin-top: 20px;
-            font-weight: 400;
-        }
-
-        .progress-row {
+        .scenario-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 0 4px;
-            gap: 8px;
             flex-wrap: wrap;
         }
-        .badge {
-            background: #ff4d6d;
-            color: #fff9e6;
+        .level-badge {
+            background: #FF8F00;
+            color: black;
+            padding: 6px 12px;
+            border-radius: 30px;
             font-weight: 700;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-size: 1rem;
-            box-shadow: 0 5px 0 #b22222, 0 8px 15px black;
-            letter-spacing: 0.5px;
-            border: 1px solid #ffbb33;
-            white-space: nowrap;
-        }
-        .info-text {
-            color: #ffefc0;
-            font-weight: 600;
-            font-size: 1rem;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 14px;
-            border-radius: 50px;
-            backdrop-filter: blur(4px);
-            white-space: nowrap;
-        }
-        .chance-indicator {
-            background: #ffb347;
-            color: #3a1f00;
-            font-weight: 800;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 0 #b26b00;
-            border: 1px solid #ffd966;
-            white-space: nowrap;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px #FF8F00;
         }
 
-        .question-desc {
-            background: linear-gradient(145deg, #ff6b6b, #c44569);
-            padding: 24px 16px;
-            border-radius: 60px;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #fff9e6;
-            box-shadow: 0 12px 0 #8b1e1e, 0 18px 30px black;
-            margin-bottom: 30px;
-            border: 2px solid #ffb347;
-            text-align: center;
+        .redline-commitment {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #FFD700;
+            border-radius: 20px;
+            padding: 16px;
+            color: #FFE5C4;
+            font-size: 1.1rem;
             line-height: 1.5;
-            text-shadow: 0 2px 0 #5a1e1e;
-            word-break: break-word;
+            box-shadow: inset 0 0 10px rgba(255,215,0,0.2);
+            margin-bottom: 8px;
+        }
+        .redline-commitment::before {
+            content: '🔴 红线要求: ';
+            color: #FFD700;
+            font-weight: 700;
         }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
+        .scenario-box {
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #FF8F00;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(255,140,0,0.2);
         }
-
-        .role-btn {
-            background: rgba(255, 255, 255, 0.25);
-            border: none;
-            border-radius: 50px;
-            padding: 16px 8px;
+        .scenario-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #FFD700;
             font-size: 1rem;
-            font-weight: 600;
-            color: #2c0a0a;
-            box-shadow: 0 7px 0 rgba(0,0,0,0.2), 0 8px 18px black;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .scenario-label i {
+            font-size: 1.2rem;
+        }
+        .scenario-text {
+            color: #FFE5C4;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .option-btn {
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #FF8F00;
+            border-radius: 40px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #FFE0B0;
+            text-align: left;
             cursor: pointer;
-            transition: all 0.1s ease, transform 0.2s;
+            transition: 0.1s;
+            box-shadow: 0 0 8px rgba(255,140,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .option-btn:active {
+            background: #FF8F00;
+            color: black;
+            border-color: #FFD700;
+        }
+        .option-btn.correct {
+            background: #2E7D32;
+            border-color: #FFD700;
+            box-shadow: 0 0 20px #FFD700;
+        }
+        .option-btn.wrong {
+            background: #B71C1C;
+            border-color: #FF3D00;
+            box-shadow: 0 0 20px #FF3D00;
+        }
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            background: #FF8F00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: black;
+            flex-shrink: 0;
+        }
+        .feedback-message {
+            background: rgba(0,0,0,0.8);
+            border: 2px solid #FFD700;
+            border-radius: 40px;
+            padding: 16px;
+            color: #FFE5C4;
+            font-size: 1.1rem;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            letter-spacing: 0.3px;
-            backdrop-filter: blur(4px);
+            box-shadow: 0 0 25px gold;
         }
-        .role-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
-            transform: scale(1.02);
-            border-color: #ffd966;
-            color: #000;
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
         }
-        .role-btn:active {
-            transform: translateY(5px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2), 0 5px 12px black;
+        .nav-btn {
+            flex: 1;
+            background: transparent;
+            border: 2px solid #FF8F00;
+            border-radius: 40px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FFE0B0;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px #FF8F00;
+        }
+        .nav-btn:active {
+            background: #FF8F00;
+            color: black;
+        }
+        .nav-btn:disabled {
+            opacity: 0.3;
+            pointer-events: none;
         }
 
         .action-bar {
@@ -294,118 +391,129 @@
             margin-top: 24px;
             flex-wrap: wrap;
         }
-
         .primary-btn, .secondary-btn {
             border: none;
             font-weight: 700;
-            padding: 14px 24px;
-            border-radius: 60px;
+            padding: 14px 20px;
+            border-radius: 40px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1.1rem;
+            transition: 0.1s;
+            font-size: 1rem;
             letter-spacing: 1px;
-            white-space: nowrap;
-            border: 2px solid rgba(255,255,255,0.6);
-            box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 10px 20px black;
+            text-transform: uppercase;
+            font-family: 'Share Tech Mono', monospace;
+            border: 2px solid;
+            background: transparent;
         }
         .primary-btn {
-            background: linear-gradient(145deg, #ff6b4a, #ff3b3f);
-            color: #fff9e6;
-        }
-        .primary-btn:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
+            border-color: #FF8F00;
+            color: #FFD7B0;
+            box-shadow: 0 0 15px #FF8F00;
         }
         .primary-btn:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 rgba(0,0,0,0.2), 0 8px 15px black;
+            background: #FF8F00;
+            color: black;
         }
         .secondary-btn {
-            background: rgba(255, 255, 255, 0.3);
-            color: #fff;
-            backdrop-filter: blur(4px);
+            border-color: #FFD700;
+            color: #FFE0B0;
+            box-shadow: 0 0 15px gold;
         }
-        .secondary-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
-            color: #000;
-        }
-        .my-achievement-btn {
-            background: #ffb347;
-            box-shadow: 0 8px 0 #b26b00;
-            color: #2c0a0a;
+        .secondary-btn:active {
+            background: #FFD700;
+            color: black;
         }
 
-        /* 成功画面 */
         .success-screen {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 0 10px;
-            animation: popIn 0.5s ease;
+            padding: 20px 0;
+            animation: popIn 0.4s ease;
         }
         @keyframes popIn {
-            0% { opacity: 0; transform: scale(0.8); }
+            0% { opacity: 0; transform: scale(0.9); }
             100% { opacity: 1; transform: scale(1); }
         }
         .slogan-top {
-            font-size: clamp(2rem, 8vw, 3.2rem);
+            font-size: clamp(2rem, 8vw, 3rem);
             font-weight: 900;
-            color: #ffefc0;
+            color: #FFD700;
             text-align: center;
             line-height: 1.2;
             margin-bottom: 10px;
-            letter-spacing: 2px;
-            text-shadow: 3px 3px 0 #ff4d6d, 5px 5px 0 rgba(0,0,0,0.3);
+            text-shadow: 0 0 20px #FF8F00, 0 0 40px #E65100;
         }
         .shield-image {
             width: 140px;
             height: auto;
             margin: 20px 0;
-            filter: drop-shadow(0 0 20px gold);
-            animation: spinGlow 3s infinite alternate;
-        }
-        @keyframes spinGlow {
-            from { filter: drop-shadow(0 0 10px gold); transform: rotate(0deg); }
-            to { filter: drop-shadow(0 0 30px #ffb347); transform: rotate(5deg); }
+            filter: drop-shadow(0 0 25px gold);
         }
         .congrats-bottom {
-            color: #fff6e0;
-            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            color: #FFE5C4;
+            font-size: 1.2rem;
             font-weight: 600;
-            background: rgba(255, 180, 70, 0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
             padding: 14px 24px;
             border-radius: 60px;
-            border: 2px solid #ffd966;
+            border: 2px solid #FFD700;
             margin-top: 20px;
             text-align: center;
             line-height: 1.4;
-            box-shadow: 0 8px 0 #b26b00;
+            box-shadow: 0 0 25px gold;
+        }
+        .success-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .success-actions button {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid;
+            border-radius: 40px;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .success-actions .achievement-btn {
+            border-color: #FF8F00;
+            color: #FFD7B0;
+            box-shadow: 0 0 15px #FF8F00;
+        }
+        .success-actions .again-btn {
+            border-color: #FFD700;
+            color: #FFE0B0;
+            box-shadow: 0 0 15px gold;
+        }
+        .success-actions button:active {
+            background: currentColor;
+            color: black;
         }
 
         .error-message {
-            background: #c44569dd;
-            color: #ffe6e6;
+            background: #B71C1C;
+            color: #FFCDB2;
             padding: 18px;
-            border-radius: 50px;
+            border-radius: 40px;
             text-align: center;
             font-weight: 700;
             font-size: 1.2rem;
-            backdrop-filter: blur(10px);
-            border: 2px solid #ff8888;
-            box-shadow: 0 6px 0 #8b1e1e;
+            border: 2px solid #FF3D00;
+            box-shadow: 0 0 25px #FF3D00;
         }
 
-        /* 模态框共用样式 */
         .modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -413,26 +521,29 @@
             padding: 16px;
         }
         .modal-content {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(20px);
-            border-radius: 50px;
+            background: rgba(5, 5, 8, 0.95);
+            border: 3px solid #FF8F00;
+            border-radius: 40px;
             padding: 24px 20px;
             max-width: 500px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px black;
+            box-shadow: 0 0 50px #FF8F00;
         }
         .modal-content h2 {
-            color: #ffefc0;
+            color: #FFD7B0;
             text-align: center;
             margin-bottom: 20px;
             font-size: 2rem;
-            text-shadow: 2px 2px 0 #ff4d6d;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #FF8F00;
         }
         .record-list {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #FF8F00;
             border-radius: 30px;
             padding: 12px;
             margin-bottom: 20px;
@@ -443,98 +554,76 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 14px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff6e0;
-            font-size: 1rem;
+            border-bottom: 1px solid #FF8F00;
+            color: #FFE0B0;
         }
-        .record-item:last-child {
-            border-bottom: none;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .record-item:last-child { border-bottom: none; }
+        .modal-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .modal-btn {
-            background: #ff6b4a;
-            border: none;
-            color: #fff9e6;
+            background: transparent;
+            border: 2px solid #FFD700;
+            color: #FFD7B0;
             font-weight: 700;
             padding: 12px 24px;
-            border-radius: 50px;
+            border-radius: 40px;
             cursor: pointer;
-            box-shadow: 0 6px 0 #b22222;
             transition: 0.1s;
-            border: 1px solid #f9d27e;
             font-size: 1rem;
+            box-shadow: 0 0 15px gold;
         }
         .modal-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #b22222;
+            background: #FFD700;
+            color: black;
         }
-        .close-btn {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 6px 0 #3a4c5c;
-        }
-        .empty-message {
-            color: #aaa;
-            text-align: center;
-            padding: 20px;
-            font-style: italic;
-        }
-        .loading-message {
-            color: #ffd966;
-            text-align: center;
-            padding: 20px;
-        }
+        .close-btn { border-color: #FF8F00; box-shadow: 0 0 15px #FF8F00; }
+        .empty-message { color: #888; text-align: center; padding: 20px; font-style: italic; }
+        .loading-message { color: #FFD700; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
-    <!-- 飘浮装饰星星 -->
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
-    <div class="star"></div>
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; background: repeating-linear-gradient(45deg, rgba(255,140,0,0.02) 0px, rgba(255,140,0,0.02) 10px, transparent 10px, transparent 20px);"></div>
 
     <div class="game-container" id="gameContainer">
         <div class="global-title" id="globalTitle">人人都是质量官</div>
+        <div class="sub-title">质量红线闯关小游戏</div>
 
-        <!-- 部门 + 姓名输入区（使用 Font Awesome 图标） -->
+        <div class="game-stats" id="gameStats" style="display: none;">
+            <span>得分: <span id="currentScore">0</span></span>
+            <span>用时: <span id="currentTime">00:00</span></span>
+        </div>
+
         <div class="info-section" id="infoSection">
             <div class="input-row">
-                <span class="input-icon"><i class="fas fa-building"></i></span>
-                <div class="input-field">
-                    <input type="text" id="departmentInput" placeholder="部门" value="" maxlength="50">
-                </div>
+                <span class="input-icon"><i class="fas fa-industry"></i></span>
+                <div class="input-field"><input type="text" id="departmentInput" placeholder="部门" maxlength="50"></div>
             </div>
             <div class="input-row">
-                <span class="input-icon"><i class="fas fa-user"></i></span>
-                <div class="input-field">
-                    <input type="text" id="playerName" placeholder="姓名" value="" maxlength="20">
-                </div>
+                <span class="input-icon"><i class="fas fa-user-cog"></i></span>
+                <div class="input-field"><input type="text" id="playerName" placeholder="姓名" maxlength="20"></div>
+            </div>
+            <div class="input-row">
+                <span class="input-icon"><i class="fas fa-id-card"></i></span>
+                <div class="input-field"><input type="text" id="yamiAccount" placeholder="娅米账号" maxlength="30"></div>
+            </div>
+            <div class="rank-info" id="rankInfo">
+                <span>当前排名：</span><span id="currentRank">--</span>
+                <span>最好成绩：</span><span id="bestScore">--</span>
             </div>
         </div>
 
-        <!-- 主面板：动态渲染 -->
         <div class="main-panel" id="mainPanel"></div>
 
-        <!-- 底部操作按钮 -->
-        <div class="action-bar">
-            <button class="primary-btn" id="startGameBtn">▶ 开始闯关</button>
-            <button class="secondary-btn my-achievement-btn" id="myAchievementBtn">🏆 我的成就</button>
-            <button class="secondary-btn reset-btn" id="resetGameBtn">⟲ 新的一局</button>
+        <div class="action-bar" id="actionBar">
+            <button class="primary-btn" id="startBtn">⚡ 开始挑战</button>
+            <button class="secondary-btn" id="rankBtn">🏆 当前排行</button>
+            <button class="secondary-btn" id="bestBtn">⭐ 我的最好成绩</button>
         </div>
     </div>
 
-    <!-- 管理员模态框（所有人记录） -->
-    <div id="adminModal" class="modal" style="display: none;">
+    <div id="adminModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>📋 质量卫士总榜</h2>
-            <div id="recordList" class="record-list">
-                <div class="loading-message">加载中...</div>
-            </div>
+            <div id="recordList" class="record-list"><div class="loading-message">加载中...</div></div>
             <div class="modal-buttons">
                 <button class="modal-btn" id="exportCSV">📥 导出CSV</button>
                 <button class="modal-btn close-btn" id="closeModal">🔙 关闭</button>
@@ -542,13 +631,10 @@
         </div>
     </div>
 
-    <!-- 个人成就模态框 -->
-    <div id="myAchievementModal" class="modal" style="display: none;">
+    <div id="myAchievementModal" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>🏅 我的成就</h2>
-            <div id="myRecordList" class="record-list">
-                <div class="loading-message">加载中...</div>
-            </div>
+            <div id="myRecordList" class="record-list"><div class="loading-message">加载中...</div></div>
             <div class="modal-buttons">
                 <button class="modal-btn close-btn" id="closeMyModal">🔙 关闭</button>
             </div>
@@ -557,400 +643,601 @@
 
     <script>
         (function() {
-            // ---------- 配置Supabase ----------
+            // ---------- Supabase 配置 ----------
             const SUPABASE_URL = 'https://sbvqbvgpmjcfarclfaxj.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_ZKlqQaFMhNEE0uRWZOd-Kw_1zIza0HF';
-            
-            // 初始化Supabase客户端
             let supabaseClient = null;
             try {
-                if (typeof supabase === 'undefined' || !supabase) {
-                    throw new Error('Supabase library not loaded properly');
-                }
                 const { createClient } = supabase;
                 supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('✅ Supabase初始化成功', supabaseClient);
+                console.log('✅ Supabase初始化成功');
             } catch (e) {
                 console.error('❌ Supabase初始化失败', e);
                 supabaseClient = null;
             }
 
-            // 注意：需要在Supabase的guardians表中增加department列，执行SQL：
-            // ALTER TABLE guardians ADD COLUMN department text;
-
-            // ---------- 质量红线十条数据 ----------
-            const QUESTIONS = [
-                { role: "物料的验收员", desc: "我承诺，只接收合格、有明确来源的物料，把好品质的源头关。" },
-                { role: "现场的配料员", desc: "我坚持，严格按标准配方操作，确保每一次投料都准确无误。" },
-                { role: "质量的守护员", desc: "我确保，任何不合格品都会被清晰标识、妥善处理，未经批准绝不流转。" },
-                { role: "工艺的操作员", desc: "我承诺，遵守每一项工艺规定，不私自调整任何参数，保证操作的一致性。" },
-                { role: "关键控制点的负责人", desc: "我重视，每个关键限值的要求，确保每一个关键参数的严格执行。" },
-                { role: "食品接触面的选择者", desc: "我坚持，只使用符合安全标准的材料，直接接触食品的表面必须安全可靠。" },
-                { role: "生产记录的填写者", desc: "我做到，及时、真实、完整地记录生产数据，让每一笔记录都经得起检验。" },
-                { role: "质量异常的发现者", desc: "我承诺，发现问题第一时间上报，不隐瞒、不拖延，共同面对解决。" },
-                { role: "设备的使用者", desc: "我坚持，不使用带病或未经确认的设备，做好日常点检，让生产更稳定。" },
-                { role: "变更的执行者", desc: "我确保，任何工艺或设备的改变，都先经过评估和审批，保证风险可控。" }
+            // ---------- 质量红线数据 ----------
+            const ROLES = [
+                { emoji: '📦', name: '物料验收员', desc: '物料守护:合格验收，源头把关' },
+                { emoji: '⚖️', name: '现场配料员', desc: '精准投料:恪守配方，分毫不差' },
+                { emoji: '🛡️', name: '质量守护员', desc: '不合格品管理:严守关口，杜绝流转' },
+                { emoji: '🔧', name: '工艺操作员', desc: '工艺纪律:遵循规范，恪守标准' },
+                { emoji: '🎯', name: '关键控制点负责人', desc: '关键控制点:聚焦关键，精准管控' },
+                { emoji: '🥘', name: '食品接触面选择者', desc: '食品接触面:严格选材，接触安全' },
+                { emoji: '📝', name: '生产记录填写者', desc: '数据记录:真实记录，有迹可循' },
+                { emoji: '🔍', name: '质量异常发现者', desc: '异常报告:主动上报，透明沟通' },
+                { emoji: '⚙️', name: '设备使用者', desc: '设备使用:健康设备，稳定生产' },
+                { emoji: '🔄', name: '变更执行者', desc: '变电管理:审慎评估，规范变更' }
             ];
 
-            // ---------- 状态 ----------
-            let gameActive = false;               
-            let gameSuccess = false;               
-            let currentQuestions = [];             
-            let currentIndex = 0;                   
-            let attemptCount = 0;                   
+            const BASE_SCENARIOS = [
+                {
+                    question: '你正在验收一批物料，发现其中一箱包装破损，且没有生产厂家标签。你应该怎么做？',
+                    options: [
+                        { text: '接收该箱物料，之后补标签', correct: false },
+                        { text: '拒收该箱物料，并报告上级', correct: true },
+                        { text: '自己重新包装并贴上标签', correct: false },
+                        { text: '先放一边，等有空再处理', correct: false }
+                    ],
+                    feedback: '✅ 正确！你识别出不合格物料，守住了品质源头关。'
+                },
+                {
+                    question: '配料时你发现配方中某种原料快用完了，仓库有类似原料，但未经过批准替换。你应该？',
+                    options: [
+                        { text: '自行替换以完成任务', correct: false },
+                        { text: '暂停配料，报告等待批准', correct: true },
+                        { text: '减少用量凑合一下', correct: false },
+                        { text: '忽略不管继续用', correct: false }
+                    ],
+                    feedback: '✅ 正确！任何变更必须经过批准，你坚守了标准。'
+                },
+                {
+                    question: '生产线上发现一批产品外观有轻微瑕疵，但功能正常。直接主管说“先放行，别耽误出货”。你应该？',
+                    options: [
+                        { text: '听从主管，直接放行', correct: false },
+                        { text: '重新检验，若不合格则隔离并上报', correct: true },
+                        { text: '偷偷放行', correct: false },
+                        { text: '让同事处理', correct: false }
+                    ],
+                    feedback: '✅ 正确！不合格品必须隔离，即使主管施压也要坚持原则。'
+                },
+                {
+                    question: '你发现某个工艺参数稍微调整后设备运行更顺畅，但未列入规定。你应该？',
+                    options: [
+                        { text: '立即按新参数操作', correct: false },
+                        { text: '记录想法，报告申请变更', correct: true },
+                        { text: '告诉同事一起调', correct: false },
+                        { text: '不管它', correct: false }
+                    ],
+                    feedback: '✅ 正确！任何参数调整必须经过正式变更流程。'
+                },
+                {
+                    question: '监控显示关键限值即将超出，但只差一点点，你该怎么办？',
+                    options: [
+                        { text: '忽略，等超出再处理', correct: false },
+                        { text: '立即采取纠正措施', correct: true },
+                        { text: '降低标准', correct: false },
+                        { text: '等待指示', correct: false }
+                    ],
+                    feedback: '✅ 正确！关键限值必须严格执行，不能有侥幸心理。'
+                },
+                {
+                    question: '需要临时更换一个食品接触的容器，但仓库只有普通工业塑料箱，你应该？',
+                    options: [
+                        { text: '用工业箱，清洗干净即可', correct: false },
+                        { text: '拒绝使用，寻找合规容器', correct: true },
+                        { text: '垫一层保鲜膜使用', correct: false },
+                        { text: '请示主管决定', correct: false }
+                    ],
+                    feedback: '✅ 正确！必须使用符合食品安全标准的材料。'
+                },
+                {
+                    question: '生产快结束时发现有一个参数忘记记录，凭记忆补上可以吗？',
+                    options: [
+                        { text: '可以，记个大概', correct: false },
+                        { text: '如实说明情况，备注补记', correct: true },
+                        { text: '空着不管', correct: false },
+                        { text: '伪造数据', correct: false }
+                    ],
+                    feedback: '✅ 正确！记录必须真实，特殊情况需备注。'
+                },
+                {
+                    question: '你发现一个微小异常，但不影响最终产品，是否要上报？',
+                    options: [
+                        { text: '不上报，省事', correct: false },
+                        { text: '立即上报并记录', correct: true },
+                        { text: '观望一下再定', correct: false },
+                        { text: '告诉同事不报', correct: false }
+                    ],
+                    feedback: '✅ 正确！任何异常都应第一时间上报，防止隐患。'
+                },
+                {
+                    question: '点检时发现设备有异响，但还能运转，你应该？',
+                    options: [
+                        { text: '继续使用，问题不大', correct: false },
+                        { text: '停止使用，报修并挂标识', correct: true },
+                        { text: '等下班再说', correct: false },
+                        { text: '自行修理', correct: false }
+                    ],
+                    feedback: '✅ 正确！带病设备必须停用报修。'
+                },
+                {
+                    question: '有同事提出一个工艺改进想法，想直接在生产线上试试。你应该？',
+                    options: [
+                        { text: '支持他试试', correct: false },
+                        { text: '要求先走变更评估流程', correct: true },
+                        { text: '不关我事', correct: false },
+                        { text: '让他找别人', correct: false }
+                    ],
+                    feedback: '✅ 正确！任何改变必须经过评估审批。'
+                }
+            ];
 
-            let userDepartment = "";
-            let userName = "";
+            function shuffleArray(arr) {
+                const newArr = [...arr];
+                for (let i = newArr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+                }
+                return newArr;
+            }
+
+            function getRandomizedScenario(index) {
+                const base = BASE_SCENARIOS[index];
+                const shuffledOptions = shuffleArray([...base.options]);
+                return {
+                    question: base.question,
+                    options: shuffledOptions,
+                    feedback: base.feedback
+                };
+            }
+
+            // 状态
+            let gameActive = false;
+            let currentLevel = 0;
+            let completed = new Array(ROLES.length).fill(false);
+            let currentScore = 0;
+            let startTime = null;
+            let timerInterval = null;
+            let randomizedScenarios = [];
 
             // DOM
             const departmentInput = document.getElementById('departmentInput');
             const playerNameInput = document.getElementById('playerName');
+            const yamiInput = document.getElementById('yamiAccount');
             const mainPanel = document.getElementById('mainPanel');
-            const startBtn = document.getElementById('startGameBtn');
-            const resetBtn = document.getElementById('resetGameBtn');
-            const myAchievementBtn = document.getElementById('myAchievementBtn');
+            const startBtn = document.getElementById('startBtn');
+            const rankBtn = document.getElementById('rankBtn');
+            const bestBtn = document.getElementById('bestBtn');
             const infoSection = document.getElementById('infoSection');
+            const actionBar = document.getElementById('actionBar');
             const globalTitle = document.getElementById('globalTitle');
+            const currentRankSpan = document.getElementById('currentRank');
+            const bestScoreSpan = document.getElementById('bestScore');
+            const gameStats = document.getElementById('gameStats');
+            const currentScoreSpan = document.getElementById('currentScore');
+            const currentTimeSpan = document.getElementById('currentTime');
 
-            // 管理员模态框
+            // 模态框
             const adminModal = document.getElementById('adminModal');
             const recordListDiv = document.getElementById('recordList');
             const exportBtn = document.getElementById('exportCSV');
             const closeModalBtn = document.getElementById('closeModal');
-
-            // 个人成就模态框
             const myModal = document.getElementById('myAchievementModal');
             const myRecordListDiv = document.getElementById('myRecordList');
             const closeMyModalBtn = document.getElementById('closeMyModal');
 
-            // ---------- 云数据库操作 ----------
-            async function addRecordToCloud(department, name) {
-                console.log('🚀 addRecordToCloud 被调用', { department, name });
-                if (!department || !name || !supabaseClient) {
-                    console.warn('❌ addRecordToCloud 跳过：参数不完整或supabaseClient无效');
+            function resetGame() {
+                completed.fill(false);
+                currentLevel = 0;
+                currentScore = 0;
+                startTime = Date.now();
+                randomizedScenarios = BASE_SCENARIOS.map((_, idx) => getRandomizedScenario(idx));
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+            }
+
+            function updateTimer() {
+                if (!gameActive) return;
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                currentTimeSpan.textContent = `${minutes}:${seconds}`;
+                currentScoreSpan.textContent = currentScore;
+            }
+
+            function startChallenge() {
+                const dept = departmentInput.value.trim();
+                const name = playerNameInput.value.trim();
+                const yami = yamiInput.value.trim();
+                if (!dept) { alert('请填写部门'); return false; }
+                if (!name) { alert('请填写姓名'); return false; }
+                if (!yami) { alert('请填写娅米账号'); return false; }
+                gameActive = true;
+                resetGame();
+                renderMainPanel();
+                return true;
+            }
+
+            async function updateUserRankAndBest() {
+                const dept = departmentInput.value.trim();
+                const name = playerNameInput.value.trim();
+                const yami = yamiInput.value.trim();
+                if (!dept || !name || !yami || !supabaseClient) {
+                    currentRankSpan.textContent = '--';
+                    bestScoreSpan.textContent = '--';
                     return;
                 }
                 try {
                     const { data, error } = await supabaseClient
                         .from('guardians')
-                        .insert([{ 
-                            department: department,
-                            name: name,
-                            created_at: new Date().toISOString()
-                        }]);
+                        .select('*')
+                        .order('duration', { ascending: true });
+                    if (error) throw error;
                     
-                    if (error) {
-                        console.error('❌ Supabase插入失败:', error);
-                        if (error.message && error.message.includes('column "department" does not exist')) {
-                            alert('数据库缺少 department 列，请在Supabase SQL中执行：ALTER TABLE guardians ADD COLUMN department text;');
+                    const userBestMap = new Map();
+                    data.forEach(rec => {
+                        const key = `${rec.department}|${rec.name}|${rec.yami}`;
+                        if (!userBestMap.has(key) || rec.duration < userBestMap.get(key)) {
+                            userBestMap.set(key, rec.duration);
                         }
+                    });
+                    
+                    const bestRecords = Array.from(userBestMap.entries()).map(([key, duration]) => {
+                        const [dept, name, yami] = key.split('|');
+                        return { dept, name, yami, duration };
+                    }).sort((a, b) => a.duration - b.duration);
+                    
+                    const currentKey = `${dept}|${name}|${yami}`;
+                    const userDuration = userBestMap.get(currentKey);
+                    if (userDuration === undefined) {
+                        currentRankSpan.textContent = '无记录';
+                        bestScoreSpan.textContent = '无';
                     } else {
-                        console.log('✅ 记录成功上传至云端', data);
+                        let rank = 1;
+                        for (let i = 0; i < bestRecords.length; i++) {
+                            if (bestRecords[i].dept === dept && bestRecords[i].name === name && bestRecords[i].yami === yami) {
+                                rank = i + 1;
+                                break;
+                            }
+                        }
+                        currentRankSpan.textContent = `第${rank}名`;
+                        bestScoreSpan.textContent = `100分 (${userDuration}秒)`;
                     }
                 } catch (e) {
-                    console.error('❌ 网络错误:', e);
+                    console.error(e);
+                    currentRankSpan.textContent = '--';
+                    bestScoreSpan.textContent = '--';
                 }
-            }
-
-            // 从Supabase获取所有记录（管理员）
-            async function getAllRecords() {
-                if (!supabaseClient) return [];
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('guardians')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-                    if (error) {
-                        console.error('查询失败:', error);
-                        return [];
-                    }
-                    return data || [];
-                } catch (e) {
-                    console.error('网络错误:', e);
-                    return [];
-                }
-            }
-
-            // 获取当前用户的记录（部门+姓名匹配）
-            async function getMyRecords() {
-                const department = departmentInput.value.trim();
-                const name = playerNameInput.value.trim();
-                if (!department || !name) {
-                    return [];
-                }
-                if (!supabaseClient) return [];
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('guardians')
-                        .select('*')
-                        .eq('department', department)
-                        .eq('name', name)
-                        .order('created_at', { ascending: false });
-                    if (error) {
-                        console.error('查询个人记录失败:', error);
-                        return [];
-                    }
-                    return data || [];
-                } catch (e) {
-                    console.error('网络错误:', e);
-                    return [];
-                }
-            }
-
-            // 暴露到全局方便调试
-            window.addRecordToCloud = addRecordToCloud;
-
-            // ---------- 辅助函数 ----------
-            function shuffleArray(arr) {
-                for (let i = arr.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [arr[i], arr[j]] = [arr[j], arr[i]];
-                }
-                return arr;
-            }
-
-            function getAllRoles() {
-                return QUESTIONS.map(q => q.role);
-            }
-
-            // 控制信息区域显示/隐藏（仅在欢迎界面显示）
-            function setInfoVisible(visible) {
-                infoSection.style.display = visible ? 'block' : 'none';
             }
 
             function renderMainPanel() {
-                if (gameSuccess) {
-                    setInfoVisible(false);
+                if (!gameActive) {
+                    infoSection.style.display = 'block';
+                    actionBar.style.display = 'flex';
+                    gameStats.style.display = 'none';
+                    updateUserRankAndBest();
+                    mainPanel.innerHTML = `
+                        <div class="redline-header">《质量红线十条》</div>
+                        <ul class="redline-list">
+                            ${ROLES.map(r => `<li class="redline-item">${r.desc}</li>`).join('')}
+                        </ul>
+                    `;
+                } else if (completed.every(v => v === true)) {
+                    infoSection.style.display = 'none';
+                    actionBar.style.display = 'none';
+                    gameStats.style.display = 'none';
                     renderSuccessScreen();
-                } else if (gameActive && currentQuestions.length > 0 && currentIndex < currentQuestions.length) {
-                    setInfoVisible(false);
-                    renderGameScreen();
                 } else {
-                    setInfoVisible(true);
-                    renderWelcomeScreen();
+                    infoSection.style.display = 'none';
+                    actionBar.style.display = 'none';
+                    gameStats.style.display = 'flex';
+                    renderLevel(currentLevel);
                 }
             }
 
-            function renderWelcomeScreen() {
-                mainPanel.innerHTML = `
-                    <div class="welcome-message">
-                        <div class="game-title-main">《质量红线十条》<br>学习闯关小游戏</div>
-                        ⚜️ 请先填写部门及姓名 ⚜️
-                        <p>🔴 每道题有两次机会，答对进入下一关，两次错误则闯关失败</p>
-                    </div>
-                `;
-            }
-
-            function renderGameScreen() {
-                if (!gameActive || currentIndex >= currentQuestions.length) return;
-
-                const q = currentQuestions[currentIndex];
-                const allRoles = getAllRoles();
-                const shuffledOptions = shuffleArray([...allRoles]);
+            function renderLevel(level) {
+                const scenario = randomizedScenarios[level];
+                const role = ROLES[level];
+                const isCompleted = completed[level];
+                const letters = ['A', 'B', 'C', 'D'];
 
                 let optionsHtml = '';
-                shuffledOptions.forEach(roleName => {
-                    optionsHtml += `<button class="role-btn" data-role="${roleName}">${roleName}</button>`;
+                scenario.options.forEach((opt, idx) => {
+                    const optClass = isCompleted ? (opt.correct ? 'correct' : '') : '';
+                    optionsHtml += `<div class="option-btn ${optClass}" data-opt="${idx}" data-correct="${opt.correct}" ${isCompleted ? 'style="pointer-events:none;"' : ''}>
+                        <span class="option-letter">${letters[idx]}</span>
+                        <span>${opt.text}</span>
+                    </div>`;
                 });
 
-                const chancesLeft = 2 - attemptCount;
-                const chanceText = chancesLeft > 0 ? `剩余机会: ${chancesLeft} 次` : `最后一次机会`;
-
-                const progress = `
-                    <div class="progress-row">
-                        <span class="badge">第 ${currentIndex+1} / 10 关</span>
-                        <span class="chance-indicator">⚡ ${chanceText}</span>
-                        <span class="info-text">🔥 质量红线</span>
+                mainPanel.innerHTML = `
+                    <div class="scenario-container">
+                        <div class="scenario-header">
+                            <span class="level-badge">第 ${level+1}/${ROLES.length} 关</span>
+                        </div>
+                        <div class="redline-commitment">${role.desc}</div>
+                        <div class="scenario-box">
+                            <div class="scenario-label">
+                                <i class="fas fa-clipboard-list"></i> 实战场景
+                            </div>
+                            <div class="scenario-text">${scenario.question}</div>
+                            <div class="options-list" id="optionsList">
+                                ${optionsHtml}
+                            </div>
+                            ${isCompleted ? `<div class="feedback-message">✅ 回答正确</div>` : ''}
+                        </div>
+                        <div class="nav-buttons">
+                            <button class="nav-btn" id="prevLevelBtn">${level === 0 ? '上一页' : '← 上一关'}</button>
+                            <button class="nav-btn" id="nextLevelBtn">${level === ROLES.length-1 ? '🏁 完成' : '下一关 →'}</button>
+                        </div>
                     </div>
                 `;
-                const descHtml = `<div class="question-desc">“我是（　　）：${q.desc}”</div>`;
-                const gridHtml = `<div class="options-grid" id="optionsGrid">${optionsHtml}</div>`;
 
-                mainPanel.innerHTML = progress + descHtml + gridHtml;
+                if (!isCompleted) {
+                    document.querySelectorAll('.option-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            if (completed[level]) return;
+                            const isCorrect = btn.dataset.correct === 'true';
+                            document.querySelectorAll('.option-btn').forEach(opt => opt.classList.remove('correct', 'wrong'));
+                            if (isCorrect) {
+                                btn.classList.add('correct');
+                                completed[level] = true;
+                                currentScore += 10;
+                                currentScoreSpan.textContent = currentScore;
 
-                document.querySelectorAll('.role-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        if (!gameActive) return;
-                        const selectedRole = e.target.getAttribute('data-role');
-                        const correctRole = currentQuestions[currentIndex].role;
-                        if (selectedRole === correctRole) {
-                            attemptCount = 0;
-                            handleCorrectAnswer();
-                        } else {
-                            attemptCount++;
-                            if (attemptCount >= 2) {
-                                gameActive = false;
-                                mainPanel.innerHTML = `<div class="error-message">❌ 两次机会都用完… 闯关失败，请重新开始</div>`;
-                                setTimeout(() => {
-                                    renderMainPanel();
-                                }, 1500);
+                                if (completed.every(v => v)) {
+                                    gameActive = false;
+                                    renderMainPanel(); // 进入成功界面
+                                } else {
+                                    renderLevel(level);
+                                }
                             } else {
-                                renderGameScreen();
+                                btn.classList.add('wrong');
+                                document.querySelectorAll('.option-btn').forEach(opt => {
+                                    if (opt.dataset.correct === 'true') opt.classList.add('correct');
+                                });
+                                document.querySelectorAll('.option-btn').forEach(opt => opt.style.pointerEvents = 'none');
                             }
-                        }
+                        });
                     });
+                }
+
+                document.getElementById('prevLevelBtn')?.addEventListener('click', () => {
+                    if (level === 0) {
+                        gameActive = false;
+                        renderMainPanel();
+                    } else {
+                        currentLevel--;
+                        renderMainPanel();
+                    }
+                });
+
+                document.getElementById('nextLevelBtn')?.addEventListener('click', () => {
+                    if (currentLevel < ROLES.length - 1) {
+                        currentLevel++;
+                        renderMainPanel();
+                    } else {
+                        if (completed.every(v => v)) {
+                            gameActive = false;
+                            renderMainPanel();
+                        } else {
+                            alert('还有关卡未完成！');
+                        }
+                    }
                 });
             }
 
-            function handleCorrectAnswer() {
-                if (!gameActive) return;
-                if (currentIndex + 1 >= currentQuestions.length) {
-                    gameActive = false;
-                    gameSuccess = true;
-                    // 成功闯关，记录部门+姓名到云端
-                    const department = departmentInput.value.trim();
-                    const name = playerNameInput.value.trim();
-                    if (department && name) {
-                        addRecordToCloud(department, name);
+            // 上传成功记录到 Supabase（核心修复点）
+            async function addRecordToCloud(department, name, yami, duration) {
+                if (!supabaseClient) {
+                    console.error('Supabase客户端未初始化');
+                    return false;
+                }
+                try {
+                    console.log('正在上传记录:', { department, name, yami, duration });
+                    const { error } = await supabaseClient
+                        .from('guardians')
+                        .insert([{ 
+                            department, 
+                            name, 
+                            yami, 
+                            duration,
+                            created_at: new Date().toISOString() 
+                        }]);
+                    if (error) {
+                        console.error('❌ Supabase插入失败:', error);
+                        return false;
                     }
-                    renderMainPanel();
-                } else {
-                    currentIndex++;
-                    renderMainPanel();
+                    console.log('✅ 记录上传成功');
+                    return true;
+                } catch (e) {
+                    console.error('❌ 网络错误:', e);
+                    return false;
                 }
             }
 
-            function renderSuccessScreen() {
+            // 成功界面
+            async function renderSuccessScreen() {
                 const name = playerNameInput.value.trim() || "质量官";
+                const dept = departmentInput.value.trim();
+                const yami = yamiInput.value.trim();
+                const duration = Math.floor((Date.now() - startTime) / 1000);
+                
+                // 上传记录（等待完成）
+                if (dept && name && yami && supabaseClient) {
+                    const success = await addRecordToCloud(dept, name, yami, duration);
+                    if (success) {
+                        console.log('数据已写入，刷新排名');
+                    } else {
+                        alert('记录上传失败，请检查控制台错误');
+                    }
+                } else {
+                    console.warn('用户信息不完整，无法上传');
+                }
+
+                // 获取排名（基于上传后的数据）
+                const rank = await getCurrentRank(duration);
+
                 mainPanel.innerHTML = `
                     <div class="success-screen">
                         <div class="slogan-top">没有质量一切为0</div>
-                        <img src="https://i.ibb.co/8LQKC2XF/shield.png" alt="质量卫士盾牌" class="shield-image" style="width:140px;height:auto;">
+                        <img src="https://i.ibb.co/8LQKC2XF/shield.png" class="shield-image" alt="盾牌">
                         <div class="congrats-bottom">✨ 恭喜 ${name} 闯关成功，让我们一起捍卫质量红线 ✨</div>
+                        <div style="color:#FFD700; margin:16px 0;">当前排名：${rank}</div>
+                        <div class="success-actions">
+                            <button class="achievement-btn" id="showAchievement">🏆 我的成就</button>
+                            <button class="again-btn" id="playAgain">🔄 再来一次</button>
+                        </div>
                     </div>
                 `;
+                document.getElementById('showAchievement')?.addEventListener('click', showAchievements);
+                document.getElementById('playAgain')?.addEventListener('click', () => {
+                    gameActive = false;
+                    resetGame();
+                    renderMainPanel();
+                });
             }
 
-            function startNewAttempt() {
-                const department = departmentInput.value.trim();
+            async function getCurrentRank(duration) {
+                if (!supabaseClient) return '--';
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('guardians')
+                        .select('duration')
+                        .order('duration', { ascending: true });
+                    if (error) throw error;
+                    const allDurations = data.map(d => d.duration);
+                    let rank = 1;
+                    for (let d of allDurations) {
+                        if (d < duration) rank++;
+                    }
+                    return `第${rank}名`;
+                } catch {
+                    return '--';
+                }
+            }
+
+            async function getAllRecords() {
+                if (!supabaseClient) return [];
+                const { data, error } = await supabaseClient.from('guardians').select('*').order('created_at', { ascending: false });
+                return error ? [] : data;
+            }
+
+            async function getMyRecords() {
+                const dept = departmentInput.value.trim();
                 const name = playerNameInput.value.trim();
-                if (department === '') {
-                    alert('请填写部门');
-                    return;
-                }
-                if (name === '') {
-                    alert('请填写姓名');
-                    return;
-                }
-                userDepartment = department;
-                userName = name;
-
-                gameActive = true;
-                gameSuccess = false;
-                currentQuestions = shuffleArray([...QUESTIONS]);
-                currentIndex = 0;
-                attemptCount = 0;
-                renderMainPanel();
+                const yami = yamiInput.value.trim();
+                if (!dept || !name || !yami || !supabaseClient) return [];
+                const { data, error } = await supabaseClient
+                    .from('guardians')
+                    .select('*')
+                    .eq('department', dept)
+                    .eq('name', name)
+                    .eq('yami', yami)
+                    .order('created_at', { ascending: false });
+                return error ? [] : data;
             }
 
-            function resetGame() {
-                gameActive = false;
-                gameSuccess = false;
-                currentQuestions = [];
-                currentIndex = 0;
-                attemptCount = 0;
-                renderMainPanel();
-            }
-
-            // ---------- 管理功能（管理员） ----------
-            globalTitle.addEventListener('dblclick', function() {
-                openAdminModal();
-            });
-
-            async function openAdminModal() {
+            // 管理员后台
+            globalTitle.addEventListener('dblclick', async () => {
                 adminModal.style.display = 'flex';
                 recordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
                 const records = await getAllRecords();
-                if (records.length === 0) {
-                    recordListDiv.innerHTML = '<div class="empty-message">暂无成功记录</div>';
-                } else {
+                if (records.length === 0) recordListDiv.innerHTML = '<div class="empty-message">暂无记录</div>';
+                else {
                     let html = '';
-                    records.forEach(rec => {
-                        const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
-                        html += `<div class="record-item"><span>${rec.department || ''} ${rec.name}</span><span>${time}</span></div>`;
-                    });
+                    records.forEach(r => html += `<div class="record-item"><span>${r.department} ${r.name}</span><span>${new Date(r.created_at).toLocaleString('zh-CN')}</span></div>`);
                     recordListDiv.innerHTML = html;
                 }
-            }
+            });
+            closeModalBtn.addEventListener('click', () => adminModal.style.display = 'none');
+            adminModal.addEventListener('click', (e) => { if (e.target === adminModal) adminModal.style.display = 'none'; });
 
-            function closeAdminModal() {
-                adminModal.style.display = 'none';
-            }
-
-            function exportToCSV() {
-                const items = document.querySelectorAll('#recordList .record-item');
-                if (items.length === 0) {
-                    alert('没有记录可导出');
+            exportBtn.addEventListener('click', () => {
+                const password = prompt('请输入管理员密码以导出名单：');
+                if (password !== 'admin123') {
+                    alert('密码错误，无权导出！');
                     return;
                 }
-                let csv = '部门,姓名,闯关成功时间\n';
-                items.forEach(item => {
-                    const text = item.querySelector('span:first-child').innerText;
-                    const time = item.querySelector('span:last-child').innerText;
-                    // 分割部门和姓名（以空格分隔）
-                    const parts = text.split(' ');
-                    const department = parts[0] || '';
-                    const name = parts[1] || text;
-                    csv += `${department},${name},${time}\n`;
+                const items = document.querySelectorAll('#recordList .record-item');
+                if (!items.length) { alert('无记录'); return; }
+                let csv = '部门,姓名,用时(秒)\n';
+                items.forEach(i => {
+                    const spans = i.querySelectorAll('span');
+                    const deptName = spans[0].innerText.split(' ');
+                    const dept = deptName[0] || '';
+                    const name = deptName[1] || '';
+                    csv += `${dept},${name},${spans[1].innerText}\n`;
                 });
-                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(blob);
-                link.href = url;
-                link.setAttribute('download', '质量卫士名单.csv');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }
-
-            exportBtn.addEventListener('click', exportToCSV);
-            closeModalBtn.addEventListener('click', closeAdminModal);
-            adminModal.addEventListener('click', function(e) {
-                if (e.target === adminModal) closeAdminModal();
+                const blob = new Blob(['\uFEFF' + csv], {type:'text/csv'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = '质量卫士.csv';
+                a.click();
             });
 
-            // ---------- 个人成就功能 ----------
-            myAchievementBtn.addEventListener('click', async function() {
-                const department = departmentInput.value.trim();
-                const name = playerNameInput.value.trim();
-                if (!department || !name) {
-                    alert('请先填写部门及姓名');
-                    return;
-                }
+            async function showAchievements() {
                 myModal.style.display = 'flex';
                 myRecordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
                 const records = await getMyRecords();
-                if (records.length === 0) {
-                    myRecordListDiv.innerHTML = '<div class="empty-message">您还没有闯关成功记录</div>';
-                } else {
+                if (records.length === 0) myRecordListDiv.innerHTML = '<div class="empty-message">暂无闯关成功记录</div>';
+                else {
                     let html = '';
-                    records.forEach(rec => {
-                        const time = new Date(rec.created_at).toLocaleString('zh-CN', { hour12: false });
-                        html += `<div class="record-item"><span>${rec.department} ${rec.name}</span><span>${time}</span></div>`;
-                    });
+                    records.forEach(r => html += `<div class="record-item"><span>${r.department} ${r.name}</span><span>${new Date(r.created_at).toLocaleString('zh-CN')}</span></div>`);
                     myRecordListDiv.innerHTML = html;
+                }
+            }
+            closeMyModalBtn.addEventListener('click', () => myModal.style.display = 'none');
+            myModal.addEventListener('click', (e) => { if (e.target === myModal) myModal.style.display = 'none'; });
+
+            startBtn.addEventListener('click', () => {
+                if (startChallenge()) renderMainPanel();
+            });
+
+            rankBtn.addEventListener('click', async () => {
+                adminModal.style.display = 'flex';
+                recordListDiv.innerHTML = '<div class="loading-message">加载中...</div>';
+                const records = await getAllRecords();
+                if (records.length === 0) recordListDiv.innerHTML = '<div class="empty-message">暂无记录</div>';
+                else {
+                    records.sort((a, b) => (a.duration || 0) - (b.duration || 0));
+                    let html = '';
+                    records.forEach((r, idx) => {
+                        html += `<div class="record-item"><span>${idx+1}. ${r.department} ${r.name}</span><span>${r.duration || '?'}秒</span></div>`;
+                    });
+                    recordListDiv.innerHTML = html;
                 }
             });
 
-            closeMyModalBtn.addEventListener('click', function() {
-                myModal.style.display = 'none';
-            });
-            myModal.addEventListener('click', function(e) {
-                if (e.target === myModal) myModal.style.display = 'none';
+            bestBtn.addEventListener('click', async () => {
+                const records = await getMyRecords();
+                if (records.length === 0) {
+                    alert('您还没有闯关成功记录');
+                } else {
+                    const best = records.reduce((min, r) => (r.duration < min.duration) ? r : min, records[0]);
+                    alert(`您的历史最好成绩：100分，用时 ${best.duration} 秒`);
+                }
             });
 
-            // 按钮事件
-            startBtn.addEventListener('click', startNewAttempt);
-            resetBtn.addEventListener('click', resetGame);
+            // 暴露测试函数
+            window.testUpload = async function() {
+                const dept = departmentInput.value.trim();
+                const name = playerNameInput.value.trim();
+                const yami = yamiInput.value.trim();
+                const duration = 120;
+                if (!dept || !name || !yami) {
+                    alert('请先填写部门、姓名、娅米账号');
+                    return;
+                }
+                await addRecordToCloud(dept, name, yami, duration);
+            };
 
             function init() {
                 renderMainPanel();
-                // 清空输入框（可选）
-                departmentInput.value = '';
-                playerNameInput.value = '';
+                setInterval(updateUserRankAndBest, 10000);
             }
-
             init();
         })();
     </script>
