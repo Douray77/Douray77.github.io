@@ -9,7 +9,6 @@
     <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 保留所有之前定义的精美样式，此处省略以避免重复，实际使用时请保留完整样式 */
         * {
             margin: 0;
             padding: 0;
@@ -207,15 +206,18 @@
         .redline-list {
             list-style: none;
             margin: 10px 0 20px;
+            padding: 0;
         }
         .redline-item {
             display: flex;
             align-items: baseline;
+            justify-content: center; /* 居中 */
             gap: 8px;
             padding: 6px 0;
             border-bottom: 1px dashed rgba(255, 140, 0, 0.3);
             color: #FFE0B0;
             font-size: 0.85rem;
+            text-align: center;
         }
         .redline-item::before {
             content: '⚡';
@@ -241,8 +243,9 @@
         }
         .scenario-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;  /* 改为靠左对齐 */
             align-items: center;
+            gap: 8px;                     /* 元素间距 */
             flex-wrap: wrap;
         }
         .level-badge {
@@ -253,6 +256,13 @@
             font-weight: 700;
             font-size: 0.9rem;
             box-shadow: 0 0 10px #FF8F00;
+        }
+        .level-role {
+            font-size: 1.2rem;            /* 加大 */
+            font-weight: 800;              /* 加粗 */
+            color: #FFD700;                /* 金色 */
+            text-shadow: 0 0 5px #FF8F00;  /* 增强光效 */
+            white-space: nowrap;
         }
 
         .redline-commitment {
@@ -355,6 +365,7 @@
             font-size: 1.1rem;
             text-align: center;
             box-shadow: 0 0 25px gold;
+            white-space: pre-wrap;
         }
 
         .nav-buttons {
@@ -556,8 +567,15 @@
             padding: 10px 14px;
             border-bottom: 1px solid #FF8F00;
             color: #FFE0B0;
+            font-size: 0.9rem;
         }
         .record-item:last-child { border-bottom: none; }
+        .record-item .dept-name {
+            font-weight: 600;
+        }
+        .record-item .score-duration {
+            color: #FFD700;
+        }
         .modal-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .modal-btn {
             background: transparent;
@@ -792,6 +810,12 @@
                 };
             }
 
+            // 解析 desc，返回 [rolePart, descPart]
+            function parseDesc(desc) {
+                const parts = desc.split(':');
+                return [parts[0], parts.slice(1).join(':')]; // 第一个冒号前为角色部分，后面为具体描述
+            }
+
             // 状态
             let gameActive = false;
             let currentLevel = 0;
@@ -942,6 +966,7 @@
                 const role = ROLES[level];
                 const isCompleted = completed[level];
                 const letters = ['A', 'B', 'C', 'D'];
+                const [rolePart, descPart] = parseDesc(role.desc);
 
                 let optionsHtml = '';
                 scenario.options.forEach((opt, idx) => {
@@ -956,8 +981,9 @@
                     <div class="scenario-container">
                         <div class="scenario-header">
                             <span class="level-badge">第 ${level+1}/${ROLES.length} 关</span>
+                            <span class="level-role">· ${rolePart}</span>
                         </div>
-                        <div class="redline-commitment">${role.desc}</div>
+                        <div class="redline-commitment">${descPart}</div>
                         <div class="scenario-box">
                             <div class="scenario-label">
                                 <i class="fas fa-clipboard-list"></i> 实战场景
@@ -966,7 +992,7 @@
                             <div class="options-list" id="optionsList">
                                 ${optionsHtml}
                             </div>
-                            ${isCompleted ? `<div class="feedback-message">✅ 回答正确</div>` : ''}
+                            ${isCompleted ? `<div class="feedback-message">${scenario.feedback}</div>` : ''}
                         </div>
                         <div class="nav-buttons">
                             <button class="nav-btn" id="prevLevelBtn">${level === 0 ? '上一页' : '← 上一关'}</button>
@@ -988,8 +1014,7 @@
                                 currentScoreSpan.textContent = currentScore;
 
                                 if (completed.every(v => v)) {
-                                    gameActive = false;
-                                    renderMainPanel(); // 进入成功界面
+                                    renderMainPanel(); // 全部完成，进入成功界面
                                 } else {
                                     renderLevel(level);
                                 }
@@ -1020,7 +1045,6 @@
                         renderMainPanel();
                     } else {
                         if (completed.every(v => v)) {
-                            gameActive = false;
                             renderMainPanel();
                         } else {
                             alert('还有关卡未完成！');
@@ -1145,7 +1169,10 @@
                 if (records.length === 0) recordListDiv.innerHTML = '<div class="empty-message">暂无记录</div>';
                 else {
                     let html = '';
-                    records.forEach(r => html += `<div class="record-item"><span>${r.department} ${r.name}</span><span>${new Date(r.created_at).toLocaleString('zh-CN')}</span></div>`);
+                    records.forEach(r => {
+                        const date = new Date(r.created_at).toLocaleString('zh-CN');
+                        html += `<div class="record-item"><span class="dept-name">${r.department} ${r.name}</span><span class="score-duration">100分 ${r.duration}秒</span></div>`;
+                    });
                     recordListDiv.innerHTML = html;
                 }
             });
@@ -1160,13 +1187,15 @@
                 }
                 const items = document.querySelectorAll('#recordList .record-item');
                 if (!items.length) { alert('无记录'); return; }
-                let csv = '部门,姓名,用时(秒)\n';
+                let csv = '部门,姓名,得分,用时(秒),时间\n';
                 items.forEach(i => {
                     const spans = i.querySelectorAll('span');
                     const deptName = spans[0].innerText.split(' ');
                     const dept = deptName[0] || '';
                     const name = deptName[1] || '';
-                    csv += `${dept},${name},${spans[1].innerText}\n`;
+                    const scoreDuration = spans[1].innerText;
+                    const [score, duration] = scoreDuration.split('分');
+                    csv += `${dept},${name},100,${duration.trim()},${new Date().toISOString()}\n`;
                 });
                 const blob = new Blob(['\uFEFF' + csv], {type:'text/csv'});
                 const a = document.createElement('a');
@@ -1182,7 +1211,10 @@
                 if (records.length === 0) myRecordListDiv.innerHTML = '<div class="empty-message">暂无闯关成功记录</div>';
                 else {
                     let html = '';
-                    records.forEach(r => html += `<div class="record-item"><span>${r.department} ${r.name}</span><span>${new Date(r.created_at).toLocaleString('zh-CN')}</span></div>`);
+                    records.forEach(r => {
+                        const date = new Date(r.created_at).toLocaleString('zh-CN');
+                        html += `<div class="record-item"><span class="dept-name">${r.department} ${r.name}</span><span class="score-duration">100分 ${r.duration}秒</span></div>`;
+                    });
                     myRecordListDiv.innerHTML = html;
                 }
             }
@@ -1202,7 +1234,7 @@
                     records.sort((a, b) => (a.duration || 0) - (b.duration || 0));
                     let html = '';
                     records.forEach((r, idx) => {
-                        html += `<div class="record-item"><span>${idx+1}. ${r.department} ${r.name}</span><span>${r.duration || '?'}秒</span></div>`;
+                        html += `<div class="record-item"><span class="dept-name">${idx+1}. ${r.department} ${r.name}</span><span class="score-duration">100分 ${r.duration}秒</span></div>`;
                     });
                     recordListDiv.innerHTML = html;
                 }
