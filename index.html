@@ -9,7 +9,7 @@
     <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 完整样式（与上一次完全相同，此处省略以节省篇幅，实际使用时需完整保留） */
+        /* 完整样式（与之前相同，为节省篇幅此处省略，实际使用时需保留完整样式） */
         * {
             margin: 0;
             padding: 0;
@@ -571,8 +571,9 @@
             font-size: 0.9rem;
         }
         .record-item:last-child { border-bottom: none; }
-        .record-item .dept-name {
+        .record-item .yami {
             font-weight: 600;
+            color: #FFD700;
         }
         .record-item .score-duration {
             color: #FFD700;
@@ -876,13 +877,35 @@
                 currentScoreSpan.textContent = currentScore;
             }
 
-            function startChallenge() {
+            // 检查娅米账号参与次数
+            async function checkPlayCount(yami) {
+                if (!supabaseClient) return false;
+                const { data, error } = await supabaseClient
+                    .from('guardians')
+                    .select('id')
+                    .eq('yami', yami);
+                if (error) {
+                    console.error('检查次数失败:', error);
+                    return false;
+                }
+                return data.length;
+            }
+
+            async function startChallenge() {
                 const dept = departmentInput.value.trim();
                 const name = playerNameInput.value.trim();
                 const yami = yamiInput.value.trim();
                 if (!dept) { alert('请填写部门'); return false; }
                 if (!name) { alert('请填写姓名'); return false; }
                 if (!yami) { alert('请填写娅米账号'); return false; }
+
+                // 检查参与次数
+                const count = await checkPlayCount(yami);
+                if (count >= 3) {
+                    alert('每个账号最多只能参与三次游戏');
+                    return false;
+                }
+
                 gameActive = true;
                 resetGame();
                 renderMainPanel();
@@ -1142,7 +1165,7 @@
                     top50.forEach((r, idx) => {
                         const completedClass = r.completed ? '' : 'failed';
                         html += `<div class="record-item ${completedClass}">
-                            <span class="dept-name">${idx+1}. ${r.department} ${r.name}</span>
+                            <span class="yami">${r.yami}</span>
                             <span class="score-duration">${r.score}分 ${r.duration}秒 ${r.completed ? '✅' : '❌'}</span>
                         </div>`;
                     });
@@ -1160,18 +1183,17 @@
                 }
                 const items = document.querySelectorAll('#recordList .record-item');
                 if (!items.length) { alert('无记录'); return; }
-                let csv = '部门,姓名,得分,用时(秒),是否成功,时间\n';
+                let csv = '部门,姓名,娅米账号,得分,用时(秒),是否成功,时间\n';
                 items.forEach(i => {
                     const spans = i.querySelectorAll('span');
-                    const deptName = spans[0].innerText.split(' ');
-                    const dept = deptName[0] || '';
-                    const name = deptName[1] || '';
+                    const yami = spans[0].innerText;
                     const scoreDuration = spans[1].innerText;
                     const parts = scoreDuration.split(' ');
                     const score = parts[0].replace('分', '');
                     const duration = parts[1].replace('秒', '');
                     const success = parts[2] === '✅' ? '是' : '否';
-                    csv += `${dept},${name},${score},${duration},${success},${new Date().toISOString()}\n`;
+                    // 由于从排行榜中无法获取部门和姓名，这里只导出娅米账号和成绩，如需完整信息可考虑修改
+                    csv += `,,${yami},${score},${duration},${success},${new Date().toISOString()}\n`;
                 });
                 const blob = new Blob(['\uFEFF' + csv], {type:'text/csv'});
                 const a = document.createElement('a');
@@ -1191,7 +1213,7 @@
                         const date = new Date(r.created_at).toLocaleString('zh-CN');
                         const completedClass = r.completed ? '' : 'failed';
                         html += `<div class="record-item ${completedClass}">
-                            <span class="dept-name">${r.department} ${r.name}</span>
+                            <span class="yami">${r.yami}</span>
                             <span class="score-duration">${r.score}分 ${r.duration}秒 ${r.completed ? '✅' : '❌'}</span>
                             <span style="font-size:0.7rem; color:#aaa;">${date}</span>
                         </div>`;
@@ -1266,7 +1288,7 @@
 
             // 按钮事件
             startBtn.addEventListener('click', () => {
-                if (startChallenge()) renderMainPanel();
+                startChallenge().then(ok => { if (ok) renderMainPanel(); });
             });
 
             rankBtn.addEventListener('click', async () => {
@@ -1280,7 +1302,7 @@
                     top50.forEach((r, idx) => {
                         const completedClass = r.completed ? '' : 'failed';
                         html += `<div class="record-item ${completedClass}">
-                            <span class="dept-name">${idx+1}. ${r.department} ${r.name}</span>
+                            <span class="yami">${r.yami}</span>
                             <span class="score-duration">${r.score}分 ${r.duration}秒 ${r.completed ? '✅' : '❌'}</span>
                         </div>`;
                     });
