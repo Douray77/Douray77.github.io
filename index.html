@@ -9,6 +9,8 @@
     <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* 此处保留您之前的所有样式，为节省篇幅，实际使用时应包含完整样式，此处省略 */
+        /* 注：样式部分与上一次提供的完整代码完全相同，可复用 */
         * {
             margin: 0;
             padding: 0;
@@ -243,7 +245,7 @@
         }
         .scenario-header {
             display: flex;
-            justify-content: flex-start;  /* 改为靠左对齐 */
+            justify-content: flex-start;  /* 靠左对齐 */
             align-items: center;
             gap: 8px;                     /* 元素间距 */
             flex-wrap: wrap;
@@ -820,6 +822,7 @@
             let gameActive = false;
             let currentLevel = 0;
             let completed = new Array(ROLES.length).fill(false);
+            let levelWrongCount = new Array(ROLES.length).fill(0); // 每个关卡已答错次数
             let currentScore = 0;
             let startTime = null;
             let timerInterval = null;
@@ -853,6 +856,7 @@
 
             function resetGame() {
                 completed.fill(false);
+                levelWrongCount.fill(0);
                 currentLevel = 0;
                 currentScore = 0;
                 startTime = Date.now();
@@ -1012,6 +1016,7 @@
                                 completed[level] = true;
                                 currentScore += 10;
                                 currentScoreSpan.textContent = currentScore;
+                                levelWrongCount[level] = 0; // 答对后重置错误计数
 
                                 if (completed.every(v => v)) {
                                     renderMainPanel(); // 全部完成，进入成功界面
@@ -1020,10 +1025,21 @@
                                 }
                             } else {
                                 btn.classList.add('wrong');
+                                // 高亮正确答案
                                 document.querySelectorAll('.option-btn').forEach(opt => {
                                     if (opt.dataset.correct === 'true') opt.classList.add('correct');
                                 });
-                                document.querySelectorAll('.option-btn').forEach(opt => opt.style.pointerEvents = 'none');
+                                // 记录错误次数
+                                levelWrongCount[level]++;
+                                if (levelWrongCount[level] >= 2) {
+                                    // 两次机会用尽，游戏失败
+                                    alert('两次机会都用完，闯关失败！');
+                                    gameActive = false;
+                                    renderMainPanel(); // 返回首页
+                                } else {
+                                    // 禁用选项，但允许用户通过下一关或上一关继续
+                                    document.querySelectorAll('.option-btn').forEach(opt => opt.style.pointerEvents = 'none');
+                                }
                             }
                         });
                     });
@@ -1044,10 +1060,14 @@
                         currentLevel++;
                         renderMainPanel();
                     } else {
+                        // 最后一关点击完成
                         if (completed.every(v => v)) {
-                            renderMainPanel();
+                            renderMainPanel(); // 全部完成，进入成功界面
                         } else {
-                            alert('还有关卡未完成！');
+                            // 未全部完成，显示得分并返回首页
+                            alert(`你的得分是${currentScore}分，请再来一次吧。`);
+                            gameActive = false;
+                            renderMainPanel();
                         }
                     }
                 });
