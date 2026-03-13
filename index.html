@@ -9,7 +9,7 @@
     <!-- Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* 完整样式（与之前相同，为节省篇幅此处省略，实际使用时需保留完整样式） */
+        /* 完整样式（与之前相同，此处省略以节省篇幅，实际使用时需保留完整样式） */
         * {
             margin: 0;
             padding: 0;
@@ -829,6 +829,7 @@
             let startTime = null;
             let timerInterval = null;
             let randomizedScenarios = [];
+            let gameUploaded = false; // 标记当前游戏是否已上传记录
 
             // DOM
             const departmentInput = document.getElementById('departmentInput');
@@ -906,6 +907,7 @@
                     return false;
                 }
 
+                gameUploaded = false; // 重置上传标志
                 gameActive = true;
                 resetGame();
                 renderMainPanel();
@@ -914,6 +916,11 @@
 
             async function uploadGameRecord(department, name, yami, score, completedAll, duration) {
                 if (!supabaseClient) return false;
+                if (gameUploaded) {
+                    console.log('游戏记录已上传，跳过重复上传');
+                    return true;
+                }
+                gameUploaded = true; // 立即标记，防止并发
                 try {
                     const { error } = await supabaseClient.from('guardians').insert([{ 
                         department, 
@@ -1183,7 +1190,7 @@
                 }
                 const items = document.querySelectorAll('#recordList .record-item');
                 if (!items.length) { alert('无记录'); return; }
-                let csv = '部门,姓名,娅米账号,得分,用时(秒),是否成功,时间\n';
+                let csv = '娅米账号,得分,用时(秒),是否成功,时间\n';
                 items.forEach(i => {
                     const spans = i.querySelectorAll('span');
                     const yami = spans[0].innerText;
@@ -1192,8 +1199,7 @@
                     const score = parts[0].replace('分', '');
                     const duration = parts[1].replace('秒', '');
                     const success = parts[2] === '✅' ? '是' : '否';
-                    // 由于从排行榜中无法获取部门和姓名，这里只导出娅米账号和成绩，如需完整信息可考虑修改
-                    csv += `,,${yami},${score},${duration},${success},${new Date().toISOString()}\n`;
+                    csv += `${yami},${score},${duration},${success},${new Date().toISOString()}\n`;
                 });
                 const blob = new Blob(['\uFEFF' + csv], {type:'text/csv'});
                 const a = document.createElement('a');
@@ -1246,8 +1252,9 @@
                     if (userError) throw userError;
 
                     if (userSuccess.length === 0) {
-                        currentRankSpan.textContent = '无记录';
-                        bestScoreSpan.textContent = '无';
+                        // 没有成功记录时显示占位符
+                        currentRankSpan.textContent = '第--名';
+                        bestScoreSpan.textContent = '--分';
                         return;
                     }
 
